@@ -36,42 +36,51 @@
   <a href="{{ route('admin.kepengurusan.create') }}" class="btn btn-primary">+ Tambah Pengurus</a>
 </div>
 
-@php $labels = ['bph' => 'Badan Pengurus Harian', 'ketua_biro' => 'Ketua Biro', 'anggota_biro' => 'Anggota Biro']; @endphp
-
 @if ($dataIssues > 0)
 <div style="display:flex;gap:.6rem;align-items:center;padding:.85rem 1rem;border-radius:.6rem;border:1px solid #f5c518;background:#fffbe6;color:#5c4b00;font-size:13px;margin-bottom:1.2rem">
   <b>Perhatian:</b>
-  <span>Ada {{ $dataIssues }} data kepengurusan yang tidak konsisten (anggota biro tanpa biro, atau level BPH dengan biro terisi). Perbaiki lewat tombol Edit.</span>
+  <span>Ada {{ $dataIssues }} data pengurus tanpa struktur/bagian. Perbaiki lewat tombol Edit.</span>
 </div>
 @endif
 
 <table class="data-table">
   <thead>
-    <tr><th>Nama</th><th>Jabatan</th><th>Biro</th><th>Urut</th><th style="text-align:right">Aksi</th></tr>
+    <tr><th>Nama</th><th>Jabatan</th><th>Ketua</th><th>Urut</th><th style="text-align:right">Aksi</th></tr>
   </thead>
   <tbody>
-    @forelse ($pengurus->groupBy('level') as $level => $rows)
-    <tr class="grp-row"><td colspan="5">{{ $labels[$level] ?? $level }}</td></tr>
-      @foreach ($rows as $k)
-      <tr>
-        <td><b style="font-weight:600">{{ $k->anggota->nama_lengkap ?? '(anggota terhapus)' }}</b></td>
-        <td>{{ $k->jabatan }}</td>
-        <td>{{ $k->biro->nama ?? '&mdash;' }}</td>
-        <td>{{ $k->urutan }}</td>
-        <td>
-          <div class="row-actions">
-            <a class="btn-sm" href="{{ route('admin.kepengurusan.edit', $k) }}">Edit</a>
-            <form method="POST" action="{{ route('admin.kepengurusan.destroy', $k) }}" onsubmit="return confirm('Hapus pengurus ini?')">
-              @csrf @method('DELETE')
-              <button type="submit" class="btn-sm danger">Hapus</button>
-            </form>
-          </div>
-        </td>
-      </tr>
+    @if ($pengurus->isEmpty())
+      <tr><td colspan="5" class="empty-cell">Belum ada data kepengurusan untuk periode ini.</td></tr>
+    @else
+      @foreach ($units as $unit)
+        @php $rows = $pengurusByUnit[$unit->id] ?? collect(); @endphp
+        @if ($rows->count())
+        <tr class="grp-row">
+          <td colspan="5">
+            {{ $unit->nama }}
+            @if ($unit->isBph())<span class="lvl">Pimpinan</span>@endif
+            &middot; {{ $rows->count() }} pengurus
+          </td>
+        </tr>
+          @foreach ($rows as $k)
+          <tr>
+            <td><b style="font-weight:600">{{ $k->anggota->nama_lengkap ?? '(anggota terhapus)' }}</b></td>
+            <td>{{ $k->jabatan }}</td>
+            <td>@if ($k->is_ketua)<span class="lvl">Ketua</span>@else&mdash;@endif</td>
+            <td>{{ $k->urutan }}</td>
+            <td>
+              <div class="row-actions">
+                <a class="btn-sm" href="{{ route('admin.kepengurusan.edit', $k) }}">Edit</a>
+                <form method="POST" action="{{ route('admin.kepengurusan.destroy', $k) }}" onsubmit="return confirm('Hapus pengurus ini?')">
+                  @csrf @method('DELETE')
+                  <button type="submit" class="btn-sm danger">Hapus</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          @endforeach
+        @endif
       @endforeach
-    @empty
-    <tr><td colspan="5" class="empty-cell">Belum ada pengurus di periode ini.</td></tr>
-    @endforelse
+    @endif
   </tbody>
 </table>
 @endsection

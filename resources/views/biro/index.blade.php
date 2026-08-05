@@ -24,7 +24,7 @@
   <div class="wrap">
     <div class="crumbs"><a href="{{ route('home') }}">Beranda</a><span>&rsaquo;</span><span>Biro</span></div>
     <span class="eyebrow">Struktur Gerakan</span>
-    <h1>Enam Biro, Satu Barisan</h1>
+    <h1>{{ $biro->count() }} Biro, Satu Barisan</h1>
     <p>Setiap biro menjadi motor penggerak di bidangnya, saling melengkapi dalam satu tujuan pergerakan.</p>
   </div>
 </section>

@@ -14,8 +14,23 @@ class Biro extends Model
     protected $table = 'biro';
 
     protected $fillable = [
-        'nama', 'slug', 'deskripsi', 'logo', 'warna_aksen', 'urutan',
+        'nama', 'slug', 'tipe', 'deskripsi', 'logo', 'warna_aksen', 'urutan',
     ];
+
+    public function isBph(): bool
+    {
+        return $this->tipe === 'bph';
+    }
+
+    public function scopeUnitBph($query)
+    {
+        return $query->where('tipe', 'bph');
+    }
+
+    public function scopeUnitBiro($query)
+    {
+        return $query->where('tipe', 'biro');
+    }
 
     public function getSlugOptions(): SlugOptions
     {

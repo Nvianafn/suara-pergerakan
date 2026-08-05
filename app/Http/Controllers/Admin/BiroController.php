@@ -11,9 +11,7 @@ use Illuminate\View\View;
 
 class BiroController extends Controller
 {
-    public function __construct(private readonly ImageService $image)
-    {
-    }
+    public function __construct(private readonly ImageService $image) {}
 
     public function index(): View
     {
@@ -39,7 +37,7 @@ class BiroController extends Controller
         $biro = Biro::create($data);
 
         return redirect()->route('admin.biro.index')
-            ->with('success', 'Biro "' . $biro->nama . '" berhasil dibuat.');
+            ->with('success', 'Biro "'.$biro->nama.'" berhasil dibuat.');
     }
 
     public function edit(Biro $biro): View
@@ -59,11 +57,16 @@ class BiroController extends Controller
         $biro->update($data);
 
         return redirect()->route('admin.biro.index')
-            ->with('success', 'Biro "' . $biro->nama . '" berhasil diperbarui.');
+            ->with('success', 'Biro "'.$biro->nama.'" berhasil diperbarui.');
     }
 
     public function destroy(Biro $biro): RedirectResponse
     {
+        if ($biro->isBph()) {
+            return redirect()->route('admin.biro.index')
+                ->with('error', 'Badan Pengurus Harian tidak bisa dihapus.');
+        }
+
         if ($biro->kepengurusan()->exists() || $biro->kegiatan()->exists()) {
             return redirect()->route('admin.biro.index')
                 ->with('error', 'Biro tidak bisa dihapus karena masih terhubung dengan pengurus atau kegiatan.');

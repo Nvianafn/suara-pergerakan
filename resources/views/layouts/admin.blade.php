@@ -47,7 +47,7 @@
     ['label' => 'Karya', 'route' => 'admin.karya.index', 'ic' => '&#128221;'],
     ['group' => 'Organisasi'],
     ['label' => 'Anggota', 'route' => 'admin.anggota.index', 'ic' => '&#128100;'],
-    ['label' => 'Biro', 'route' => 'admin.biro.index', 'ic' => '&#127970;'],
+    ['label' => 'Struktur Organisasi', 'route' => 'admin.biro.index', 'ic' => '&#127970;'],
     ['label' => 'Periode', 'route' => 'admin.periode.index', 'ic' => '&#128198;'],
     ['label' => 'Kepengurusan', 'route' => 'admin.kepengurusan.index', 'ic' => '&#129309;'],
     ['group' => 'Sistem'],

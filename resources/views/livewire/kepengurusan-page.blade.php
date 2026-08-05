@@ -86,7 +86,7 @@
           @foreach ($biroList as $b)
             @php
               $anggotaBiro = ($perBiro[$b->id] ?? collect())
-                  ->sortBy(fn ($p) => $p->level === 'ketua_biro' ? 0 : $p->urutan + 1)
+                  ->sortBy(fn ($p) => $p->is_ketua ? 0 : $p->urutan + 1)
                   ->values();
             @endphp
             @if ($anggotaBiro->count())
@@ -107,7 +107,7 @@
                     @endif
                   </span>
                   <span class="meta">
-                    <b>{{ $p->anggota->nama_lengkap }}@if ($p->level === 'ketua_biro')<span class="badge-ketua">Ketua</span>@endif</b>
+                    <b>{{ $p->anggota->nama_lengkap }}@if ($p->is_ketua)<span class="badge-ketua">Ketua</span>@endif</b>
                     <small>{{ $p->jabatan }}</small>
                   </span>
                 </div>

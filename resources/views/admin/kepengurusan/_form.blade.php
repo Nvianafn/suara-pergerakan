@@ -14,7 +14,7 @@
 
 @php $k = $kepengurusan ?? null; @endphp
 
-<div class="form-narrow" x-data="{ level: '{{ old('level', $k?->level ?? 'bph') }}' }">
+<div class="form-narrow">
   @error('unique_check')<div class="err" style="margin-bottom:1rem">{{ $message }}</div>@enderror
 
   <div class="field">
@@ -40,37 +40,41 @@
 
   <div class="form-grid-2">
     <div class="field">
-      <label for="level">Level</label>
-      <select id="level" name="level" x-model="level"
-              x-on:change="if ($el.value === 'bph') $refs.biro.value = ''" required>
-        <option value="bph">Badan Pengurus Harian</option>
-        <option value="ketua_biro">Ketua Biro</option>
-        <option value="anggota_biro">Anggota Biro</option>
+      <label for="biro_id">Struktur / Bagian</label>
+      <select id="biro_id" name="biro_id" required>
+        <option value="">&mdash; pilih struktur &mdash;</option>
+        <optgroup label="Pimpinan">
+          @foreach ($unitList->where('tipe', 'bph') as $u)
+            <option value="{{ $u->id }}" @selected((string) old('biro_id', $k?->biro_id) === (string) $u->id)>{{ $u->nama }}</option>
+          @endforeach
+        </optgroup>
+        <optgroup label="Biro">
+          @foreach ($unitList->where('tipe', 'biro') as $u)
+            <option value="{{ $u->id }}" @selected((string) old('biro_id', $k?->biro_id) === (string) $u->id)>{{ $u->nama }}</option>
+          @endforeach
+        </optgroup>
       </select>
-    </div>
-    <div class="field" x-show="level !== 'bph'" x-cloak>
-      <label for="biro_id">Biro</label>
-      <select id="biro_id" name="biro_id" x-ref="biro">
-        <option value="">&mdash; pilih biro &mdash;</option>
-        @foreach ($biroList as $b)
-          <option value="{{ $b->id }}" @selected((string) old('biro_id', $k?->biro_id) === (string) $b->id)>{{ $b->nama }}</option>
-        @endforeach
-      </select>
-      <div class="hint">BPH tidak terikat biro tertentu.</div>
       @error('biro_id')<div class="err">{{ $message }}</div>@enderror
+    </div>
+    <div class="field">
+      <label for="jabatan">Jabatan</label>
+      <input type="text" id="jabatan" name="jabatan" class="input" value="{{ old('jabatan', $k?->jabatan) }}" placeholder="mis. Ketua Rayon / Ketua Biro / Anggota" required>
+      @error('jabatan')<div class="err">{{ $message }}</div>@enderror
     </div>
   </div>
 
   <div class="form-grid-2">
     <div class="field">
-      <label for="jabatan">Jabatan</label>
-      <input type="text" id="jabatan" name="jabatan" class="input" value="{{ old('jabatan', $k?->jabatan) }}" placeholder="mis. Ketua Rayon / Sekretaris" required>
-      @error('jabatan')<div class="err">{{ $message }}</div>@enderror
-    </div>
-    <div class="field">
       <label for="urutan">Urutan Tampil</label>
       <input type="number" id="urutan" name="urutan" class="input" value="{{ old('urutan', $k?->urutan ?? 0) }}">
       <div class="hint">Kecil tampil lebih dulu.</div>
+    </div>
+    <div class="field">
+      <label style="display:flex;align-items:center;gap:.55rem;font-weight:600;margin:0;min-height:20px">
+        <input type="checkbox" name="is_ketua" value="1" @checked(old('is_ketua', $k?->is_ketua))>
+        Pimpinan / Ketua bagian
+      </label>
+      <div class="hint">Tampilkan badge &ldquo;Ketua&rdquo; di card publik.</div>
     </div>
   </div>
 

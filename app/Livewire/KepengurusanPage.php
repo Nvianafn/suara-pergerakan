@@ -33,9 +33,9 @@ class KepengurusanPage extends Component
             'periodeList' => Periode::orderByDesc('tahun_mulai')->get(),
             'periode' => Periode::find($this->periodeId),
             'pengurus' => $pengurus,
-            'bph' => $pengurus->where('level', 'bph'),
-            'perBiro' => $pengurus->whereNotNull('biro_id')->groupBy('biro_id'),
-            'biroList' => Biro::orderBy('urutan')->get(),
+            'bph' => $pengurus->filter(fn ($p) => $p->biro?->tipe === 'bph'),
+            'perBiro' => $pengurus->filter(fn ($p) => $p->biro?->tipe === 'biro')->groupBy('biro_id'),
+            'biroList' => Biro::unitBiro()->orderBy('urutan')->get(),
         ]);
     }
 }

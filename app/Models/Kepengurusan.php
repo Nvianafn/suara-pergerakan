@@ -10,7 +10,11 @@ class Kepengurusan extends Model
     protected $table = 'kepengurusan';
 
     protected $fillable = [
-        'anggota_id', 'periode_id', 'biro_id', 'jabatan', 'level', 'urutan',
+        'anggota_id', 'periode_id', 'biro_id', 'jabatan', 'is_ketua', 'urutan',
+    ];
+
+    protected $casts = [
+        'is_ketua' => 'boolean',
     ];
 
     public function anggota(): BelongsTo
@@ -30,6 +34,6 @@ class Kepengurusan extends Model
 
     public function scopeBph($query)
     {
-        return $query->where('level', 'bph');
+        return $query->whereHas('biro', fn ($q) => $q->where('tipe', 'bph'));
     }
 }

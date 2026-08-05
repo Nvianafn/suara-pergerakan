@@ -21,19 +21,17 @@ class KepengurusanController extends Controller
 
         $pengurus = Kepengurusan::with(['anggota', 'biro'])
             ->where('periode_id', $selectedId)
-            ->orderByRaw("FIELD(level, 'bph', 'ketua_biro', 'anggota_biro')")
             ->orderBy('urutan')
             ->get();
 
-        $dataIssues = $pengurus->filter(function (Kepengurusan $k) {
-            return ($k->level !== 'bph' && ! $k->biro_id)
-                || ($k->level === 'bph' && $k->biro_id);
-        })->count();
+        $dataIssues = $pengurus->filter(fn (Kepengurusan $k) => ! $k->biro_id)->count();
 
         return view('admin.kepengurusan.index', [
             'periodeList' => $periode,
             'selectedId' => $selectedId,
             'pengurus' => $pengurus,
+            'pengurusByUnit' => $pengurus->groupBy('biro_id'),
+            'units' => Biro::orderBy('urutan')->get(),
             'dataIssues' => $dataIssues,
         ]);
     }
@@ -80,7 +78,7 @@ class KepengurusanController extends Controller
         return [
             'periodeList' => Periode::orderByDesc('tahun_mulai')->get(),
             'anggotaList' => Anggota::orderBy('nama_lengkap')->get(),
-            'biroList' => Biro::orderBy('urutan')->get(),
+            'unitList' => Biro::orderBy('urutan')->get(),
         ];
     }
 
@@ -88,7 +86,8 @@ class KepengurusanController extends Controller
     {
         $data = collect($request->validated())->except('unique_check')->toArray();
 
-        $data['biro_id'] = $data['biro_id'] ?: null;
+        $data['biro_id'] = $data['biro_id'];
+        $data['is_ketua'] = $request->boolean('is_ketua');
         $data['urutan'] = $data['urutan'] ?? 0;
 
         return $data;

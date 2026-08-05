@@ -19,9 +19,9 @@ class KepengurusanRequest extends FormRequest
         return [
             'periode_id' => ['required', 'exists:periode,id'],
             'anggota_id' => ['required', 'exists:anggota,id'],
-            'biro_id' => ['exists:biro,id', 'required_unless:level,bph', 'prohibited_if:level,bph'],
+            'biro_id' => ['required', 'exists:biro,id'],
             'jabatan' => ['required', 'string', 'max:100'],
-            'level' => ['required', 'in:bph,ketua_biro,anggota_biro'],
+            'is_ketua' => ['nullable', 'boolean'],
             'urutan' => ['nullable', 'integer', 'min:0', 'max:127'],
             'unique_check' => [
                 function ($attribute, $value, $fail) use ($id) {
@@ -48,7 +48,7 @@ class KepengurusanRequest extends FormRequest
         return [
             'periode_id' => 'periode',
             'anggota_id' => 'anggota',
-            'biro_id' => 'biro',
+            'biro_id' => 'struktur',
         ];
     }
 }

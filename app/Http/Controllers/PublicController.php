@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anggota;
 use App\Models\Biro;
 use App\Models\Karya;
 use App\Models\Kegiatan;
@@ -21,13 +22,13 @@ class PublicController extends Controller
             ->bph()->orderBy('urutan')->take(2)->get();
 
         return view('home', [
-            'biro' => Biro::orderBy('urutan')->get(),
+            'biro' => Biro::unitBiro()->orderBy('urutan')->get(),
             'kegiatanTerbaru' => Kegiatan::with('biro')->published()->latest('tanggal')->take(3)->get(),
             'karyaPilihan' => Karya::with('anggota')->published()->latest('published_at')->take(5)->get(),
             'bph' => $bph,
             'periodeAktif' => $periodeAktif,
             'stats' => [
-                'anggota' => \App\Models\Anggota::where('status', 'aktif')->count(),
+                'anggota' => Anggota::where('status', 'aktif')->count(),
                 'biro' => Biro::count(),
                 'kegiatan' => Kegiatan::published()->count(),
                 'karya' => Karya::published()->count(),
@@ -40,7 +41,7 @@ class PublicController extends Controller
         return view('tentang', [
             'periodeAktif' => Periode::aktif()->first(),
             'stats' => [
-                'anggota' => \App\Models\Anggota::where('status', 'aktif')->count(),
+                'anggota' => Anggota::where('status', 'aktif')->count(),
                 'biro' => Biro::count(),
                 'kegiatan' => Kegiatan::published()->count(),
                 'karya' => Karya::published()->count(),
@@ -51,7 +52,7 @@ class PublicController extends Controller
     public function biroIndex(): View
     {
         return view('biro.index', [
-            'biro' => Biro::withCount(['kepengurusan', 'kegiatan'])->orderBy('urutan')->get(),
+            'biro' => Biro::unitBiro()->withCount(['kepengurusan', 'kegiatan'])->orderBy('urutan')->get(),
         ]);
     }
 
@@ -66,43 +67,8 @@ class PublicController extends Controller
 
         return view('biro.show', [
             'biro' => $biro,
-            'ketua' => $biro->kepengurusan->firstWhere('level', 'ketua_biro'),
+            'ketua' => $biro->kepengurusan->firstWhere('is_ketua', true),
             'kegiatan' => $biro->kegiatan()->published()->latest('tanggal')->take(4)->get(),
-        ]);
-    }
-
-    public function kepengurusan(Request $request): View
-    {
-        $periodeList = Periode::orderByDesc('tahun_mulai')->get();
-        $periode = $request->filled('periode')
-            ? $periodeList->firstWhere('id', (int) $request->periode)
-            : ($periodeList->firstWhere('is_aktif', true) ?? $periodeList->first());
-
-        $pengurus = Kepengurusan::with(['anggota', 'biro'])
-            ->where('periode_id', $periode?->id)
-            ->orderBy('urutan')->get();
-
-        return view('kepengurusan', [
-            'periodeList' => $periodeList,
-            'periode' => $periode,
-            'bph' => $pengurus->where('level', 'bph'),
-            'perBiro' => $pengurus->whereIn('level', ['ketua_biro', 'anggota_biro'])->groupBy('biro_id'),
-            'biroList' => Biro::orderBy('urutan')->get(),
-        ]);
-    }
-
-    public function kegiatanIndex(Request $request): View
-    {
-        $query = Kegiatan::with('biro')->published();
-
-        if ($request->filled('biro')) {
-            $query->whereHas('biro', fn ($q) => $q->where('slug', $request->biro));
-        }
-
-        return view('kegiatan.index', [
-            'kegiatan' => $query->latest('tanggal')->paginate(9)->withQueryString(),
-            'biroList' => Biro::orderBy('urutan')->get(),
-            'biroAktif' => $request->biro,
         ]);
     }
 
@@ -115,24 +81,6 @@ class PublicController extends Controller
             'kegiatan' => $kegiatan,
             'lainnya' => Kegiatan::published()->where('id', '!=', $kegiatan->id)
                 ->latest('tanggal')->take(3)->get(),
-        ]);
-    }
-
-    public function karyaIndex(Request $request): View
-    {
-        $query = Karya::with('anggota')->published();
-
-        if ($request->filled('tipe')) {
-            $query->where('tipe', $request->tipe);
-        }
-        if ($request->filled('q')) {
-            $query->where('judul', 'like', '%' . $request->q . '%');
-        }
-
-        return view('karya.index', [
-            'karya' => $query->latest('published_at')->paginate(8)->withQueryString(),
-            'tipeAktif' => $request->tipe,
-            'keyword' => $request->q,
         ]);
     }
 

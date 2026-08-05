@@ -37,8 +37,18 @@ class DatabaseSeeder extends Seeder
         ];
         $biro = [];
         foreach ($biroData as $i => $b) {
-            $biro[$i] = Biro::create($b + ['urutan' => $i]);
+            $biro[$i] = Biro::create($b + ['tipe' => 'biro', 'urutan' => $i]);
         }
+        $bphUnit = Biro::updateOrCreate(
+            ['slug' => 'badan-pengurus-harian'],
+            [
+                'nama' => 'Badan Pengurus Harian',
+                'tipe' => 'bph',
+                'deskripsi' => 'Pimpinan rayon yang menggerakkan roda organisasi sehari-hari.',
+                'warna_aksen' => '#002068',
+                'urutan' => 0,
+            ]
+        );
 
         // ---- Periode ----
         Periode::create([
@@ -63,13 +73,13 @@ class DatabaseSeeder extends Seeder
         ];
         foreach ($anggotaData as $i => [$nama, $prodi, $ang]) {
             $a[$i] = Anggota::create([
-                'nim' => '2' . str_pad((string) ($i + 1), 8, '0', STR_PAD_LEFT),
+                'nim' => '2'.str_pad((string) ($i + 1), 8, '0', STR_PAD_LEFT),
                 'nama_lengkap' => $nama,
                 'nama_panggilan' => explode(' ', $nama)[0],
                 'angkatan' => $ang,
                 'fakultas' => 'Sains dan Teknologi',
                 'prodi' => $prodi,
-                'email' => strtolower(str_replace([' ', '.'], '', explode(' ', $nama)[0])) . ($i + 1) . '@student.pmii.id',
+                'email' => strtolower(str_replace([' ', '.'], '', explode(' ', $nama)[0])).($i + 1).'@student.pmii.id',
                 'bio' => 'Kader PMII Rayon Saintek yang aktif dalam kajian dan pengabdian.',
                 'status' => 'aktif',
             ]);
@@ -83,19 +93,19 @@ class DatabaseSeeder extends Seeder
         foreach ($bph as [$idx, $jab, $ord]) {
             Kepengurusan::create([
                 'anggota_id' => $a[$idx]->id, 'periode_id' => $periode->id,
-                'biro_id' => null, 'jabatan' => $jab, 'level' => 'bph', 'urutan' => $ord,
+                'biro_id' => $bphUnit->id, 'jabatan' => $jab, 'is_ketua' => true, 'urutan' => $ord,
             ]);
         }
         // Ketua + anggota Biro Keilmuan sebagai contoh lengkap
         Kepengurusan::create([
             'anggota_id' => $a[4]->id, 'periode_id' => $periode->id,
-            'biro_id' => $biro[0]->id, 'jabatan' => 'Ketua Biro Keilmuan', 'level' => 'ketua_biro', 'urutan' => 0,
+            'biro_id' => $biro[0]->id, 'jabatan' => 'Ketua Biro Keilmuan', 'is_ketua' => true, 'urutan' => 0,
         ]);
         foreach ([5, 6, 7, 8] as $ord => $idx) {
             Kepengurusan::create([
                 'anggota_id' => $a[$idx]->id, 'periode_id' => $periode->id,
                 'biro_id' => $biro[0]->id, 'jabatan' => 'Anggota Biro Keilmuan',
-                'level' => 'anggota_biro', 'urutan' => $ord,
+                'is_ketua' => false, 'urutan' => $ord,
             ]);
         }
         // Ketua biro lain
@@ -103,7 +113,7 @@ class DatabaseSeeder extends Seeder
             Kepengurusan::create([
                 'anggota_id' => $a[$angIdx]->id, 'periode_id' => $periode->id,
                 'biro_id' => $biro[$biroIdx]->id,
-                'jabatan' => 'Ketua ' . $biro[$biroIdx]->nama, 'level' => 'ketua_biro', 'urutan' => 0,
+                'jabatan' => 'Ketua '.$biro[$biroIdx]->nama, 'is_ketua' => true, 'urutan' => 0,
             ]);
         }
 
@@ -119,14 +129,14 @@ class DatabaseSeeder extends Seeder
         foreach ($kegiatanData as [$judul, $biroIdx, $tgl, $lokasi, $desk]) {
             $keg = Kegiatan::create([
                 'biro_id' => $biro[$biroIdx]->id, 'judul' => $judul,
-                'deskripsi' => $desk . ' Kegiatan ini menjadi bagian dari ikhtiar pergerakan untuk terus tumbuh bersama.',
+                'deskripsi' => $desk.' Kegiatan ini menjadi bagian dari ikhtiar pergerakan untuk terus tumbuh bersama.',
                 'tanggal' => $tgl, 'lokasi' => $lokasi, 'status' => 'published',
                 'created_by' => $admin->id,
             ]);
             for ($f = 1; $f <= 4; $f++) {
                 KegiatanFoto::create([
                     'kegiatan_id' => $keg->id, 'path' => 'seed/kegiatan-sample.jpg',
-                    'caption' => 'Dokumentasi ' . $judul . ' #' . $f, 'urutan' => $f,
+                    'caption' => 'Dokumentasi '.$judul.' #'.$f, 'urutan' => $f,
                 ]);
             }
         }
@@ -145,7 +155,7 @@ class DatabaseSeeder extends Seeder
             Karya::create([
                 'anggota_id' => $angIdx === null ? null : $a[$angIdx]->id,
                 'judul' => $judul, 'tipe' => $tipe,
-                'konten' => '<p>' . $excerpt . '</p><p>Tulisan ini merupakan bagian dari ruang literasi kader PMII Rayon Saintek, sebagai ikhtiar merawat tradisi berpikir dan menulis.</p>',
+                'konten' => '<p>'.$excerpt.'</p><p>Tulisan ini merupakan bagian dari ruang literasi kader PMII Rayon Saintek, sebagai ikhtiar merawat tradisi berpikir dan menulis.</p>',
                 'excerpt' => $excerpt, 'tags' => $tags,
                 'status' => 'published', 'published_at' => $tgl,
                 'created_by' => $admin->id,
