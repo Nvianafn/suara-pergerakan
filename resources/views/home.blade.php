@@ -69,6 +69,7 @@
 .leaders{display:flex;gap:1.2rem}
 .leader{text-align:center}
 .leader .ph{width:112px;height:132px;border-radius:var(--r-media);background:linear-gradient(160deg,#dce9ff,#8aa4ff);border:2px solid rgba(255,255,255,.35);display:grid;place-items:center;font-family:var(--font-display);font-weight:700;font-size:2rem;color:var(--primary);margin-bottom:.7rem;overflow:hidden}
+.leader .ph img{width:100%;height:100%;object-fit:cover}
 .leader b{color:#fff;font-family:var(--font-sans);font-weight:600;font-size:.92rem;display:block}
 .leader small{color:var(--on-primary-container);font-size:12px}
 @media(max-width:960px){.hero-grid,.about,.peng-grid{grid-template-columns:1fr;gap:2rem}.hero-card{display:none}.biro-grid,.karya-grid{grid-template-columns:1fr 1fr}.keg-grid{grid-template-columns:1fr 1fr}.keg-card:first-child{grid-row:auto;grid-column:span 2}.keg-card:first-child .keg-thumb{height:220px}.karya-card.tall{grid-row:auto}.stat:nth-child(2),.stat:nth-child(3){transform:none}.peng-grid{text-align:center}.leaders{justify-content:center} }
@@ -209,7 +210,17 @@
         </div>
         <div class="leaders">
           @foreach ($bph as $p)
-          <div class="leader"><div class="ph">{{ $p->anggota->initial() }}</div><b>{{ $p->anggota->nama_lengkap }}</b><small>{{ $p->jabatan }}</small></div>
+          <div class="leader">
+            <div class="ph">
+              @if ($p->anggota->foto_url)
+              <img src="{{ $p->anggota->foto_url }}" alt="{{ $p->anggota->nama_lengkap }}" loading="lazy">
+              @else
+              {{ $p->anggota->initial() }}
+              @endif
+            </div>
+            <b>{{ $p->anggota->nama_lengkap }}</b>
+            <small>{{ $p->jabatan }}</small>
+          </div>
           @endforeach
         </div>
       </div>

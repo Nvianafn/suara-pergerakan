@@ -8,12 +8,14 @@
 .biro-detail .body p{color:var(--on-surface-variant);margin-bottom:1.1rem;font-size:1.02rem}
 .ketua-card{padding:2rem;border-radius:1.25rem;text-align:center}
 .ketua-card .av{width:120px;height:140px;margin:0 auto 1rem;border-radius:1rem;border:3px solid var(--gold);background:linear-gradient(160deg,#dce9ff,#8aa4ff);display:grid;place-items:center;font-family:var(--font-display);font-size:2.4rem;color:var(--primary);overflow:hidden}
+.ketua-card .av img{width:100%;height:100%;object-fit:cover}
 .ketua-card .role{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--secondary)}
 .ketua-card b{display:block;font-family:var(--font-display);font-size:1.25rem;color:var(--primary);margin:.3rem 0}
 .ketua-card small{color:var(--on-surface-variant)}
 .pengurus-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem}
 .person{display:flex;align-items:center;gap:.8rem;padding:.9rem;border-radius:.8rem;background:var(--sc-low)}
-.person .av{width:44px;height:44px;border-radius:50%;background:var(--sc-high);display:grid;place-items:center;font-family:var(--font-display);font-weight:700;color:var(--primary);flex:none}
+.person .av{width:44px;height:44px;border-radius:50%;background:var(--sc-high);display:grid;place-items:center;font-family:var(--font-display);font-weight:700;color:var(--primary);flex:none;overflow:hidden}
+.person .av img{width:100%;height:100%;object-fit:cover}
 .person b{font-size:.92rem;color:var(--on-surface);display:block;line-height:1.2}
 .person small{font-size:12px;color:var(--on-surface-variant)}
 .keg-mini{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.5rem}
@@ -49,7 +51,13 @@
         <div class="pengurus-grid">
           @forelse ($biro->kepengurusan as $p)
           <div class="person">
-            <span class="av">{{ $p->anggota->initial() }}</span>
+            <span class="av">
+              @if ($p->anggota->foto_url)
+              <img src="{{ $p->anggota->foto_url }}" alt="{{ $p->anggota->nama_lengkap }}" loading="lazy">
+              @else
+              {{ $p->anggota->initial() }}
+              @endif
+            </span>
             <span><b>{{ $p->anggota->nama_lengkap }}</b><small>{{ $p->jabatan }}</small></span>
           </div>
           @empty
@@ -73,7 +81,13 @@
       <aside>
         @if ($ketua)
         <div class="ketua-card glass reveal">
-          <div class="av">{{ $ketua->anggota->initial() }}</div>
+          <div class="av">
+            @if ($ketua->anggota->foto_url)
+            <img src="{{ $ketua->anggota->foto_url }}" alt="{{ $ketua->anggota->nama_lengkap }}" loading="lazy">
+            @else
+            {{ $ketua->anggota->initial() }}
+            @endif
+          </div>
           <div class="role">Ketua Biro</div>
           <b>{{ $ketua->anggota->nama_lengkap }}</b>
           <small>{{ $ketua->anggota->prodi }} &middot; {{ $ketua->anggota->angkatan }}</small>

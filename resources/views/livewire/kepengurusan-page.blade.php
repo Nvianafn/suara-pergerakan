@@ -12,6 +12,7 @@
 .bph-grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
 .bph-card{text-align:center}
 .bph-card .ph{width:100%;aspect-ratio:1/1.15;border-radius:1rem;background:linear-gradient(160deg,#dce9ff,#8aa4ff);border:2px solid rgba(255,255,255,.3);display:grid;place-items:center;font-family:var(--font-display);font-size:2.2rem;color:var(--primary);margin-bottom:.8rem;overflow:hidden}
+.bph-card .ph img{width:100%;height:100%;object-fit:cover}
 .bph-card b{color:#fff;font-family:var(--font-sans);font-weight:600;font-size:.98rem;display:block}
 .bph-card small{color:var(--on-primary-container);font-size:12.5px}
 .acc-item{border:1px solid var(--outline-variant);border-radius:1rem;background:rgba(255,255,255,.72);backdrop-filter:blur(12px);margin-bottom:1rem;overflow:hidden}
@@ -23,7 +24,8 @@
 .acc-head .arrow{transition:transform .3s ease;color:var(--primary)}
 .acc-body{padding:0 1.6rem 1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
 .person{display:flex;align-items:center;gap:.8rem;padding:.8rem;border-radius:.8rem;background:var(--sc-low)}
-.person .av{width:44px;height:44px;border-radius:50%;background:var(--sc-high);display:grid;place-items:center;font-family:var(--font-display);font-weight:700;color:var(--primary);flex:none}
+.person .av{width:44px;height:44px;border-radius:50%;background:var(--sc-high);display:grid;place-items:center;font-family:var(--font-display);font-weight:700;color:var(--primary);flex:none;overflow:hidden}
+.person .av img{width:100%;height:100%;object-fit:cover}
 .person b{font-size:.92rem;color:var(--on-surface);display:block;line-height:1.2}
 .person small{font-size:12px;color:var(--on-surface-variant)}
 @media(max-width:960px){.bph-grid{grid-template-columns:1fr 1fr}.acc-body{grid-template-columns:1fr 1fr}}
@@ -60,7 +62,13 @@
         <div class="bph-grid">
           @foreach ($bph as $p)
           <div class="bph-card">
-            <div class="ph">{{ $p->anggota->initial() }}</div>
+            <div class="ph">
+              @if ($p->anggota->foto_url)
+              <img src="{{ $p->anggota->foto_url }}" alt="{{ $p->anggota->nama_lengkap }}" loading="lazy">
+              @else
+              {{ $p->anggota->initial() }}
+              @endif
+            </div>
             <b>{{ $p->anggota->nama_lengkap }}</b>
             <small>{{ $p->jabatan }}</small>
           </div>
@@ -84,7 +92,13 @@
           <div class="acc-body" x-show="open" x-collapse x-cloak>
             @foreach ($anggotaBiro->sortBy('urutan') as $p)
             <div class="person">
-              <span class="av">{{ $p->anggota->initial() }}</span>
+              <span class="av">
+                @if ($p->anggota->foto_url)
+                <img src="{{ $p->anggota->foto_url }}" alt="{{ $p->anggota->nama_lengkap }}" loading="lazy">
+                @else
+                {{ $p->anggota->initial() }}
+                @endif
+              </span>
               <span>
                 <b>{{ $p->anggota->nama_lengkap }}</b>
                 <small>{{ $p->jabatan }}</small>

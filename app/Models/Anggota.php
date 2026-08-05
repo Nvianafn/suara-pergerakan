@@ -28,4 +28,9 @@ class Anggota extends Model
     {
         return strtoupper(mb_substr($this->nama_lengkap, 0, 1));
     }
+
+    public function getFotoUrlAttribute(): ?string
+    {
+        return $this->foto ? asset('storage/' . $this->foto) : null;
+    }
 }

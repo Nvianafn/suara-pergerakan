@@ -44,7 +44,7 @@
     <tr>
       <td>
         <div class="cell-name">
-          <span class="av-sm">@if($a->foto)<img src="{{ asset('storage/'.$a->foto) }}" alt="">@else {{ $a->initial() }} @endif</span>
+          <span class="av-sm">@if($a->foto_url)<img src="{{ $a->foto_url }}" alt="">@else {{ $a->initial() }} @endif</span>
           <span><b>{{ $a->nama_lengkap }}</b>@if($a->nama_panggilan)<small>{{ $a->nama_panggilan }}</small>@endif</span>
         </div>
       </td>
