@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Kepengurusan;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class KepengurusanRequest extends FormRequest
 {
@@ -19,13 +19,13 @@ class KepengurusanRequest extends FormRequest
         return [
             'periode_id' => ['required', 'exists:periode,id'],
             'anggota_id' => ['required', 'exists:anggota,id'],
-            'biro_id' => ['nullable', 'exists:biro,id'],
+            'biro_id' => ['exists:biro,id', 'required_unless:level,bph', 'prohibited_if:level,bph'],
             'jabatan' => ['required', 'string', 'max:100'],
             'level' => ['required', 'in:bph,ketua_biro,anggota_biro'],
             'urutan' => ['nullable', 'integer', 'min:0', 'max:127'],
             'unique_check' => [
                 function ($attribute, $value, $fail) use ($id) {
-                    $exists = \App\Models\Kepengurusan::where('anggota_id', $this->anggota_id)
+                    $exists = Kepengurusan::where('anggota_id', $this->anggota_id)
                         ->where('periode_id', $this->periode_id)
                         ->where('jabatan', $this->jabatan)
                         ->when($id, fn ($q) => $q->where('id', '!=', $id))

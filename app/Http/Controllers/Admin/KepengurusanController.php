@@ -21,14 +21,20 @@ class KepengurusanController extends Controller
 
         $pengurus = Kepengurusan::with(['anggota', 'biro'])
             ->where('periode_id', $selectedId)
-            ->orderBy('level')
+            ->orderByRaw("FIELD(level, 'bph', 'ketua_biro', 'anggota_biro')")
             ->orderBy('urutan')
             ->get();
+
+        $dataIssues = $pengurus->filter(function (Kepengurusan $k) {
+            return ($k->level !== 'bph' && ! $k->biro_id)
+                || ($k->level === 'bph' && $k->biro_id);
+        })->count();
 
         return view('admin.kepengurusan.index', [
             'periodeList' => $periode,
             'selectedId' => $selectedId,
             'pengurus' => $pengurus,
+            'dataIssues' => $dataIssues,
         ]);
     }
 
@@ -82,10 +88,7 @@ class KepengurusanController extends Controller
     {
         $data = collect($request->validated())->except('unique_check')->toArray();
 
-        if ($data['level'] === 'bph') {
-            $data['biro_id'] = null;
-        }
-
+        $data['biro_id'] = $data['biro_id'] ?: null;
         $data['urutan'] = $data['urutan'] ?? 0;
 
         return $data;

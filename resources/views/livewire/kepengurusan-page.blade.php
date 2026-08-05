@@ -15,21 +15,23 @@
 .bph-card .ph img{width:100%;height:100%;object-fit:cover}
 .bph-card b{color:#fff;font-family:var(--font-sans);font-weight:600;font-size:.98rem;display:block}
 .bph-card small{color:var(--on-primary-container);font-size:12.5px}
-.acc-item{border:1px solid var(--outline-variant);border-radius:1rem;background:rgba(255,255,255,.72);backdrop-filter:blur(12px);margin-bottom:1rem;overflow:hidden}
-.acc-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.3rem 1.6rem;cursor:pointer}
-.acc-head .left{display:flex;align-items:center;gap:1rem}
-.acc-head .dot{width:12px;height:12px;border-radius:50%;flex:none}
-.acc-head h3{font-size:1.15rem}
-.acc-head .count{font-size:12.5px;color:var(--on-surface-variant)}
-.acc-head .arrow{transition:transform .3s ease;color:var(--primary)}
-.acc-body{padding:0 1.6rem 1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-.person{display:flex;align-items:center;gap:.8rem;padding:.8rem;border-radius:.8rem;background:var(--sc-low)}
-.person .av{width:44px;height:44px;border-radius:50%;background:var(--sc-high);display:grid;place-items:center;font-family:var(--font-display);font-weight:700;color:var(--primary);flex:none;overflow:hidden}
+.biro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.biro-card{border:1px solid var(--outline-variant);border-radius:1.25rem;background:rgba(255,255,255,.78);backdrop-filter:blur(12px);box-shadow:var(--shadow-sm);overflow:hidden}
+.biro-card .b-head{display:flex;align-items:center;gap:.8rem;padding:1.15rem 1.3rem;border-bottom:1px solid var(--outline-variant)}
+.biro-card .b-head .dot{width:12px;height:12px;border-radius:50%;flex:none}
+.biro-card .b-head h3{font-size:1.02rem;flex:1;margin:0}
+.biro-card .b-head .count{font-size:12px;color:var(--on-surface-variant);white-space:nowrap}
+.biro-card .b-body{padding:1rem 1.3rem 1.3rem;display:grid;gap:.6rem}
+.person{display:flex;align-items:center;gap:.75rem;padding:.55rem .6rem;border-radius:.8rem;background:var(--sc-low)}
+.person .av{width:42px;height:42px;border-radius:50%;background:var(--sc-high);display:grid;place-items:center;font-family:var(--font-display);font-weight:700;color:var(--primary);flex:none;overflow:hidden}
 .person .av img{width:100%;height:100%;object-fit:cover}
-.person b{font-size:.92rem;color:var(--on-surface);display:block;line-height:1.2}
-.person small{font-size:12px;color:var(--on-surface-variant)}
-@media(max-width:960px){.bph-grid{grid-template-columns:1fr 1fr}.acc-body{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){.bph-grid,.acc-body{grid-template-columns:1fr}.bph-panel{padding:2rem}}
+.person .meta{min-width:0}
+.person b{font-size:.9rem;color:var(--on-surface);display:block;line-height:1.3}
+.person .badge-ketua{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--primary);border-radius:9999px;padding:.14rem .5rem;margin-left:.4rem;vertical-align:1.5px}
+.person small{font-size:11.5px;color:var(--on-surface-variant);display:block}
+.empty{text-align:center;color:var(--on-surface-variant);padding:3.5rem 1rem;border:1px dashed var(--outline-variant);border-radius:1.25rem}
+@media(max-width:960px){.bph-grid{grid-template-columns:1fr 1fr}.biro-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.bph-grid,.biro-grid{grid-template-columns:1fr}.bph-panel{padding:2rem}}
 </style>
 @endpush
 
@@ -55,62 +57,67 @@
     </div>
 
     <div wire:loading.class="opacity-50">
-      @if ($bph->count())
-      <div class="bph-panel">
-        
-        <h2>Badan Pengurus Harian</h2>
-        <div class="bph-grid">
-          @foreach ($bph as $p)
-          <div class="bph-card">
-            <div class="ph">
-              @if ($p->anggota->foto_url)
-              <img src="{{ $p->anggota->foto_url }}" alt="{{ $p->anggota->nama_lengkap }}" loading="lazy">
-              @else
-              {{ $p->anggota->initial() }}
-              @endif
-            </div>
-            <b>{{ $p->anggota->nama_lengkap }}</b>
-            <small>{{ $p->jabatan }}</small>
-          </div>
-          @endforeach
-        </div>
-      </div>
-      @endif
-
-      @forelse ($biroList as $b)
-        @php $anggotaBiro = $perBiro[$b->id] ?? collect(); @endphp
-        @if ($anggotaBiro->count())
-        <div class="acc-item" x-data="{ open: {{ $loop->first ? 'true' : 'false' }} }">
-          <div class="acc-head" x-on:click="open = !open">
-            <div class="left">
-              <span class="dot" style="background:{{ $b->warna_aksen ?? '#003399' }}"></span>
-              <h3>{{ $b->nama }}</h3>
-              <span class="count">&middot; {{ $anggotaBiro->count() }} pengurus</span>
-            </div>
-            <span class="arrow" :style="open ? 'transform:rotate(180deg)' : ''">&#9662;</span>
-          </div>
-          <div class="acc-body" x-show="open" x-collapse x-cloak>
-            @foreach ($anggotaBiro->sortBy('urutan') as $p)
-            <div class="person">
-              <span class="av">
+      @if (! $pengurus->count())
+      <div class="empty">Belum ada data kepengurusan untuk periode ini.</div>
+      @else
+        @if ($bph->count())
+        <div class="bph-panel">
+          <span class="eyebrow">Pimpinan Rayon</span>
+          <h2>Badan Pengurus Harian</h2>
+          <div class="bph-grid">
+            @foreach ($bph as $p)
+            <div class="bph-card">
+              <div class="ph">
                 @if ($p->anggota->foto_url)
                 <img src="{{ $p->anggota->foto_url }}" alt="{{ $p->anggota->nama_lengkap }}" loading="lazy">
                 @else
                 {{ $p->anggota->initial() }}
                 @endif
-              </span>
-              <span>
-                <b>{{ $p->anggota->nama_lengkap }}</b>
-                <small>{{ $p->jabatan }}</small>
-              </span>
+              </div>
+              <b>{{ $p->anggota->nama_lengkap }}</b>
+              <small>{{ $p->jabatan }}</small>
             </div>
             @endforeach
           </div>
         </div>
         @endif
-      @empty
-        <p>Belum ada data kepengurusan untuk periode ini.</p>
-      @endforelse
+
+        <div class="biro-grid">
+          @foreach ($biroList as $b)
+            @php
+              $anggotaBiro = ($perBiro[$b->id] ?? collect())
+                  ->sortBy(fn ($p) => $p->level === 'ketua_biro' ? 0 : $p->urutan + 1)
+                  ->values();
+            @endphp
+            @if ($anggotaBiro->count())
+            <div class="biro-card">
+              <div class="b-head">
+                <span class="dot" style="background:{{ $b->warna_aksen ?? '#003399' }}"></span>
+                <h3>{{ $b->nama }}</h3>
+                <span class="count">{{ $anggotaBiro->count() }} pengurus</span>
+              </div>
+              <div class="b-body">
+                @foreach ($anggotaBiro as $p)
+                <div class="person">
+                  <span class="av">
+                    @if ($p->anggota->foto_url)
+                    <img src="{{ $p->anggota->foto_url }}" alt="{{ $p->anggota->nama_lengkap }}" loading="lazy">
+                    @else
+                    {{ $p->anggota->initial() }}
+                    @endif
+                  </span>
+                  <span class="meta">
+                    <b>{{ $p->anggota->nama_lengkap }}@if ($p->level === 'ketua_biro')<span class="badge-ketua">Ketua</span>@endif</b>
+                    <small>{{ $p->jabatan }}</small>
+                  </span>
+                </div>
+                @endforeach
+              </div>
+            </div>
+            @endif
+          @endforeach
+        </div>
+      @endif
     </div>
   </div>
 </section>

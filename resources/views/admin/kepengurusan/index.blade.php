@@ -38,6 +38,13 @@
 
 @php $labels = ['bph' => 'Badan Pengurus Harian', 'ketua_biro' => 'Ketua Biro', 'anggota_biro' => 'Anggota Biro']; @endphp
 
+@if ($dataIssues > 0)
+<div style="display:flex;gap:.6rem;align-items:center;padding:.85rem 1rem;border-radius:.6rem;border:1px solid #f5c518;background:#fffbe6;color:#5c4b00;font-size:13px;margin-bottom:1.2rem">
+  <b>Perhatian:</b>
+  <span>Ada {{ $dataIssues }} data kepengurusan yang tidak konsisten (anggota biro tanpa biro, atau level BPH dengan biro terisi). Perbaiki lewat tombol Edit.</span>
+</div>
+@endif
+
 <table class="data-table">
   <thead>
     <tr><th>Nama</th><th>Jabatan</th><th>Biro</th><th>Urut</th><th style="text-align:right">Aksi</th></tr>

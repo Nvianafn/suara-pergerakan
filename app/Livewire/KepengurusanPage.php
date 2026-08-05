@@ -32,8 +32,9 @@ class KepengurusanPage extends Component
         return view('livewire.kepengurusan-page', [
             'periodeList' => Periode::orderByDesc('tahun_mulai')->get(),
             'periode' => Periode::find($this->periodeId),
+            'pengurus' => $pengurus,
             'bph' => $pengurus->where('level', 'bph'),
-            'perBiro' => $pengurus->whereIn('level', ['ketua_biro', 'anggota_biro'])->groupBy('biro_id'),
+            'perBiro' => $pengurus->whereNotNull('biro_id')->groupBy('biro_id'),
             'biroList' => Biro::orderBy('urutan')->get(),
         ]);
     }

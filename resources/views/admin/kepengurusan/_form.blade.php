@@ -41,7 +41,8 @@
   <div class="form-grid-2">
     <div class="field">
       <label for="level">Level</label>
-      <select id="level" name="level" x-model="level" required>
+      <select id="level" name="level" x-model="level"
+              x-on:change="if ($el.value === 'bph') $refs.biro.value = ''" required>
         <option value="bph">Badan Pengurus Harian</option>
         <option value="ketua_biro">Ketua Biro</option>
         <option value="anggota_biro">Anggota Biro</option>
@@ -49,7 +50,7 @@
     </div>
     <div class="field" x-show="level !== 'bph'" x-cloak>
       <label for="biro_id">Biro</label>
-      <select id="biro_id" name="biro_id">
+      <select id="biro_id" name="biro_id" x-ref="biro">
         <option value="">&mdash; pilih biro &mdash;</option>
         @foreach ($biroList as $b)
           <option value="{{ $b->id }}" @selected((string) old('biro_id', $k?->biro_id) === (string) $b->id)>{{ $b->nama }}</option>
