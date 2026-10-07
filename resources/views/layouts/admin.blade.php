@@ -32,6 +32,9 @@
 .flash{padding:.9rem 1.2rem;border-radius:.7rem;margin-bottom:1.5rem;font-size:.93rem}
 .flash-success{background:rgba(0,51,153,.08);border:1px solid var(--primary-container);color:var(--primary)}
 .flash-error{background:#fdecec;border:1px solid #f5b5b5;color:#b3261e}
+.admin-content input,.admin-content select,.admin-content textarea{max-width:100%;min-width:0}
+.admin-content .field,.admin-content .card{min-width:0}
+@media(max-width:860px){#sideToggle{display:inline-flex!important}.admin-top{flex-wrap:wrap;gap:.75rem;padding:1rem}.admin-user{flex-wrap:wrap}.admin-content{padding:1rem}.admin-content .data-table{display:block;max-width:100%;overflow-x:auto}.admin-content .toolbar{flex-wrap:wrap;gap:.75rem}.admin-content .form-grid-2{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:860px){.admin-shell{grid-template-columns:1fr}.admin-side{position:fixed;z-index:60;width:264px;transform:translateX(-105%);transition:.25s}.admin-side.open{transform:none}}
 </style>
 @stack('styles')
@@ -89,7 +92,7 @@
   <div class="admin-main">
     <header class="admin-top">
       <div style="display:flex;align-items:center;gap:1rem">
-        <button class="btn-logout" style="display:none" id="sideToggle" onclick="document.getElementById('adminSide').classList.toggle('open')">&#9776;</button>
+        <button class="btn-logout" style="display:none" id="sideToggle" aria-label="Buka menu admin" aria-controls="adminSide" aria-expanded="false" onclick="const side=document.getElementById('adminSide');side.classList.toggle('open');this.setAttribute('aria-expanded',side.classList.contains('open'))">&#9776;</button>
         <h1>@yield('title', 'Dashboard')</h1>
       </div>
       <div class="admin-user">
@@ -105,6 +108,7 @@
     <main class="admin-content">
       @if (session('success'))<div class="flash flash-success">{{ session('success') }}</div>@endif
       @if (session('error'))<div class="flash flash-error">{{ session('error') }}</div>@endif
+      @if($errors->any())<div class="flash flash-error" role="alert"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
       @yield('content')
     </main>
   </div>

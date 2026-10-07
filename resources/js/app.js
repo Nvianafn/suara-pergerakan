@@ -1,5 +1,23 @@
 import './bootstrap';
 
+const adminSide = document.getElementById('adminSide');
+const sideToggle = document.getElementById('sideToggle');
+if (adminSide && sideToggle) {
+    const closeMenu = () => {
+        adminSide.classList.remove('open');
+        sideToggle.setAttribute('aria-expanded', 'false');
+    };
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && adminSide.classList.contains('open')) {
+            closeMenu();
+            sideToggle.focus();
+        }
+    });
+    document.addEventListener('click', (event) => {
+        if (!adminSide.contains(event.target) && !sideToggle.contains(event.target)) closeMenu();
+    });
+}
+
 document.querySelectorAll('[data-image-preview]').forEach((input) => {
     const image = input.parentElement.querySelector('[data-selected-preview]');
     let url;
