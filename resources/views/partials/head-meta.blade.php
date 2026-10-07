@@ -4,7 +4,7 @@
   $__t = (isset($pageTitle) && $pageTitle) ? $pageTitle : $__site;
   $__title = $__t . ' · Bergerak, Berpikir, Berkarya';
   $__desc = (isset($pageDesc) && $pageDesc) ? $pageDesc : Setting::get('deskripsi_singkat', 'Website resmi PMII Rayon Saintek: rumah kaderisasi, gagasan, dan karya mahasiswa Sains dan Teknologi yang progresif dan berakhlak.');
-  $__img = (isset($ogImage) && $ogImage) ? $ogImage : asset('og-image.png');
+   $__img = (isset($ogImage) && $ogImage) ? $ogImage : Setting::imageUrl('og_image', 'og-image.png');
   $__url = url()->current();
 @endphp
 <meta charset="UTF-8">
@@ -17,9 +17,13 @@
 <meta name="theme-color" content="#002068">
 <link rel="canonical" href="{{ $__url }}">
 
+@if(Setting::get('favicon'))
+<link rel="icon" type="image/webp" href="{{ Setting::imageUrl('favicon', 'favicon.ico') }}">
+@else
 <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.ico') }}">
 <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32.png') }}">
 <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+@endif
 <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 
 <meta property="og:type" content="website">

@@ -3,10 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 class Periode extends Model
 {
+    use HasSlug;
+
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()->generateSlugsFrom('nama')->saveSlugsTo('slug')->doNotGenerateSlugsOnUpdate();
+    }
+
     protected $table = 'periode';
 
     protected $fillable = [
@@ -25,5 +35,10 @@ class Periode extends Model
     public function scopeAktif($query)
     {
         return $query->where('is_aktif', true);
+    }
+
+    public function pembina(): BelongsToMany
+    {
+        return $this->belongsToMany(Pembina::class, 'periode_pembina')->withPivot(['id', 'urutan'])->withTimestamps();
     }
 }

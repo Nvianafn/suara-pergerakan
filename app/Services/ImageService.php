@@ -16,14 +16,14 @@ class ImageService
      */
     public function store(UploadedFile $file, string $dir, int $maxWidth = 1600): string
     {
-        $manager = new ImageManager(new Driver());
+        $manager = new ImageManager(new Driver);
         $image = $manager->read($file->getRealPath());
 
         if ($image->width() > $maxWidth) {
             $image->scaleDown(width: $maxWidth);
         }
 
-        $path = trim($dir, '/') . '/' . Str::random(24) . '.webp';
+        $path = trim($dir, '/').'/'.Str::random(24).'.webp';
         Storage::disk('public')->put($path, (string) $image->toWebp(82));
 
         return $path;

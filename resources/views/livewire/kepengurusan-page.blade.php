@@ -57,6 +57,21 @@
     </div>
 
     <div wire:loading.class="opacity-50">
+      @if($pembina->isNotEmpty())
+      <div class="bph-panel">
+        <h2>Pembina</h2>
+        <div class="bph-grid">
+          @foreach($pembina as $profil)
+          <div class="bph-card">
+            <div class="ph">@if($profil->setuju_publikasi && $profil->foto)<img src="{{ route('media.pembina', $profil) }}" alt="{{ $profil->nama_lengkap }}" loading="lazy">@else{{ mb_substr($profil->nama_lengkap, 0, 1) }}@endif</div>
+            <b>{{ $profil->nama_lengkap }}</b>
+            <small>Pembina</small>
+            @if($profil->setuju_publikasi && $profil->keterangan)<p>{{ $profil->keterangan }}</p>@endif
+          </div>
+          @endforeach
+        </div>
+      </div>
+      @endif
       @if (! $pengurus->count())
       <div class="empty">Belum ada data kepengurusan untuk periode ini.</div>
       @else
@@ -93,7 +108,7 @@
             <div class="biro-card">
               <div class="b-head">
                 <span class="dot" style="background:{{ $b->warna_aksen ?? '#003399' }}"></span>
-                <h3>{{ $b->nama }}</h3>
+                <h3>{{ $anggotaBiro->first()->biro_nama ?? $b->nama }}</h3>
                 <span class="count">{{ $anggotaBiro->count() }} pengurus</span>
               </div>
               <div class="b-body">

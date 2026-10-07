@@ -32,15 +32,18 @@
 
     <div class="field">
       <label for="deskripsi">Deskripsi</label>
-      <textarea id="deskripsi" name="deskripsi" placeholder="Ceritakan jalannya kegiatan... (pisahkan paragraf dengan baris kosong)">{{ old('deskripsi', $k?->deskripsi) }}</textarea>
+      <textarea id="deskripsi" name="deskripsi" data-rich-text placeholder="Ceritakan jalannya kegiatan...">{{ old('deskripsi', $k?->deskripsi) }}</textarea>
       @error('deskripsi')<div class="err">{{ $message }}</div>@enderror
     </div>
 
     <div class="field">
       <label>Foto Dokumentasi @if($k)(tambahan)@endif</label>
-      <input type="file" name="foto[]" accept="image/*" multiple class="input">
-      <div class="hint">Bisa pilih beberapa foto sekaligus. Maks 4MB per foto.</div>
+      <input id="galeri-upload" type="file" name="foto[]" accept="image/jpeg,image/png,image/webp" multiple class="input" data-gallery-upload>
+      <div data-gallery-captions aria-live="polite"></div>
+      <div class="hint">JPG, PNG, atau WebP. Maksimal 20 foto galeri termasuk yang tersimpan, 5 MB per file, dan 40 MB total upload termasuk thumbnail.</div>
+      @error('foto')<div class="err">{{ $message }}</div>@enderror
       @error('foto.*')<div class="err">{{ $message }}</div>@enderror
+      @error('caption.*')<div class="err">{{ $message }}</div>@enderror
     </div>
 
     @if ($k && $k->foto->count())
@@ -50,7 +53,7 @@
       <div class="foto-item">
         <img src="{{ Str::startsWith($f->path, 'seed/') ? asset('images/hero.png') : asset('storage/'.$f->path) }}" alt="">
         <span style="flex:1;font-size:13px;color:var(--on-surface-variant)">{{ $f->caption ?? 'Tanpa keterangan' }}</span>
-        <label><input type="checkbox" name="hapus_foto[]" value="{{ $f->id }}"> Hapus</label>
+        @if(auth()->user()->isSuperAdmin())<label><input type="checkbox" name="hapus_foto[]" value="{{ $f->id }}"> Hapus permanen</label>@endif
       </div>
       @endforeach
     </div>
@@ -61,6 +64,7 @@
     <h3>Publikasi</h3>
     <div class="field">
       <label for="status">Status</label>
+      @include('admin._content-scope', ['record' => $k, 'withBiro' => false])
       <select id="status" name="status">
         <option value="draft" @selected(old('status', $k?->status) === 'draft')>Draft</option>
         <option value="published" @selected(old('status', $k?->status) === 'published')>Published</option>
@@ -73,10 +77,10 @@
     </div>
     <div class="field">
       <label for="biro_id">Biro Penyelenggara</label>
-      <select id="biro_id" name="biro_id">
+      <select id="biro_id" name="biro_id" @disabled(auth()->user()->role === 'admin_biro')>
         <option value="">&mdash; Umum &mdash;</option>
         @foreach ($biroList as $b)
-          <option value="{{ $b->id }}" @selected((string) old('biro_id', $k?->biro_id) === (string) $b->id)>{{ $b->nama }}</option>
+          <option value="{{ $b->id }}" @selected((string) old('biro_id', auth()->user()->role === 'admin_biro' ? auth()->user()->biro_id : $k?->biro_id) === (string) $b->id)>{{ $b->nama }}</option>
         @endforeach
       </select>
     </div>

@@ -37,7 +37,7 @@ class KaryaIndex extends Component
         $karya = Karya::with('anggota')
             ->published()
             ->when($this->tipe, fn ($q) => $q->where('tipe', $this->tipe))
-            ->when($this->search, fn ($q) => $q->where('judul', 'like', '%' . $this->search . '%'))
+            ->when($this->search, fn ($q) => $q->where('judul', 'like', '%'.$this->search.'%'))
             ->latest('published_at')
             ->paginate(8);
 

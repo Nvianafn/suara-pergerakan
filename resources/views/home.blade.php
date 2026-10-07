@@ -83,7 +83,7 @@
 @endphp
 
 <section class="hero">
-  <div class="hero-bg"><img src="{{ asset('images/hero.png') }}" alt="Mahasiswa PMII Rayon Saintek berdiskusi di kampus"></div>
+  <div class="hero-bg"><img src="{{ \App\Models\Setting::imageUrl('hero_image', 'images/hero.png') }}" alt="Mahasiswa PMII Rayon Saintek berdiskusi di kampus"></div>
   <div class="wrap">
     <div class="hero-grid">
       <div class="hero-copy">
@@ -163,7 +163,7 @@
       <a href="{{ route('kegiatan.show', $k) }}" class="keg-card reveal">
         <div class="keg-thumb">
           <img src="{{ $k->thumbnail ? asset('storage/'.$k->thumbnail) : asset('images/hero.png') }}" alt="{{ $k->judul }}">
-          @if ($k->biro)<span class="tag">{{ Str::of($k->biro->nama)->replace('Biro ', '') }}</span>@endif
+          @if ($k->biro_label)<span class="tag">{{ Str::of($k->biro_label)->replace('Biro ', '') }}</span>@endif
         </div>
         <div class="keg-body">
           <div class="meta">{{ $k->tanggal->translatedFormat('d F Y') }} @if($k->lokasi)&middot; {{ $k->lokasi }} @endif</div>

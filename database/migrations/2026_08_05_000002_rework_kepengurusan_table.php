@@ -22,6 +22,12 @@ return new class extends Migration
                 ->update(['biro_id' => $bphId]);
         }
 
+        if (DB::getDriverName() === 'sqlsrv') {
+            foreach (DB::select("SELECT name FROM sys.check_constraints WHERE parent_object_id = OBJECT_ID('kepengurusan') AND (parent_column_id = COLUMNPROPERTY(OBJECT_ID('kepengurusan'), 'level', 'ColumnId') OR definition LIKE '%level%')") as $constraint) {
+                DB::statement('ALTER TABLE kepengurusan DROP CONSTRAINT ['.str_replace(']', ']]', $constraint->name).']');
+            }
+        }
+
         Schema::table('kepengurusan', function (Blueprint $table) {
             $table->dropColumn('level');
         });

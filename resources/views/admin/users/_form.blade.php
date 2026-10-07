@@ -44,11 +44,21 @@
 
   <aside class="form-side">
     <h3>Pengaturan Akun</h3>
+    <div class="field">
+      <label for="is_active">Status akun</label>
+      <select id="is_active" name="is_active"><option value="1" @selected(old('is_active', $u?->is_active ?? true))>Aktif</option><option value="0" @selected(! old('is_active', $u?->is_active ?? true))>Nonaktif</option></select>
+    </div>
+    <div class="field">
+      <label for="biro_id">Biro (wajib untuk Admin Biro)</label>
+      <select id="biro_id" name="biro_id"><option value="">Tanpa biro</option>@foreach($biroList as $biro)<option value="{{ $biro->id }}" @selected(old('biro_id', $u?->biro_id) == $biro->id)>{{ $biro->nama }}</option>@endforeach</select>
+      @error('biro_id')<div class="err">{{ $message }}</div>@enderror
+    </div>
     
     <div class="field">
       <label for="role">Peran (Role)</label>
       <select id="role" name="role" class="input" required>
         <option value="admin" {{ old('role', $u?->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+        <option value="admin_biro" @selected(old('role', $u?->role) == 'admin_biro')>Admin Biro</option>
         <option value="super_admin" {{ old('role', $u?->role) == 'super_admin' ? 'selected' : '' }}>Super Admin</option>
       </select>
       @error('role')<div class="err">{{ $message }}</div>@enderror

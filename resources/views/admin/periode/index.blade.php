@@ -43,7 +43,8 @@
       <td>
         <div class="row-actions">
           <a class="btn-sm" href="{{ route('admin.periode.edit', $p) }}">Edit</a>
-          <form method="POST" action="{{ route('admin.periode.destroy', $p) }}" onsubmit="return confirm('Hapus periode ini? Seluruh data kepengurusan di periode ini ikut terhapus.')">
+          <a class="btn-sm" href="{{ route('admin.periode.pengurus', $p) }}">Kelola Pengurus</a>
+          <form method="POST" action="{{ route('admin.periode.destroy', $p) }}" onsubmit="return confirm('Hapus periode kosong ini? Periode aktif atau yang memiliki relasi tidak dapat dihapus.')">
             @csrf @method('DELETE')
             <button type="submit" class="btn-sm danger">Hapus</button>
           </form>

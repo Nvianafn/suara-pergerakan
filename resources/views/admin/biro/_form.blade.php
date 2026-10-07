@@ -23,6 +23,7 @@
 <div class="form-wrap">
   <div class="form-main">
     <div class="field">
+      <label><input type="hidden" name="is_aktif" value="0"><input type="checkbox" name="is_aktif" value="1" @checked(old('is_aktif', ($biro ?? null)?->is_aktif ?? true))> Biro aktif</label>
       <label for="nama">Nama Biro</label>
       <input type="text" id="nama" name="nama" class="input" value="{{ old('nama', $b?->nama) }}" placeholder="mis. Biro Keilmuan" required>
       @error('nama')<div class="err">{{ $message }}</div>@enderror

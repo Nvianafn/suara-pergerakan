@@ -41,13 +41,8 @@
   <div class="form-grid-2">
     <div class="field">
       <label for="biro_id">Struktur / Bagian</label>
-      <select id="biro_id" name="biro_id" required>
+      <select id="biro_id" name="biro_id">
         <option value="">&mdash; pilih struktur &mdash;</option>
-        <optgroup label="Pimpinan">
-          @foreach ($unitList->where('tipe', 'bph') as $u)
-            <option value="{{ $u->id }}" @selected((string) old('biro_id', $k?->biro_id) === (string) $u->id)>{{ $u->nama }}</option>
-          @endforeach
-        </optgroup>
         <optgroup label="Biro">
           @foreach ($unitList->where('tipe', 'biro') as $u)
             <option value="{{ $u->id }}" @selected((string) old('biro_id', $k?->biro_id) === (string) $u->id)>{{ $u->nama }}</option>
@@ -70,11 +65,14 @@
       <div class="hint">Kecil tampil lebih dulu.</div>
     </div>
     <div class="field">
-      <label style="display:flex;align-items:center;gap:.55rem;font-weight:600;margin:0;min-height:20px">
-        <input type="checkbox" name="is_ketua" value="1" @checked(old('is_ketua', $k?->is_ketua))>
-        Pimpinan / Ketua bagian
-      </label>
-      <div class="hint">Tampilkan badge &ldquo;Ketua&rdquo; di card publik.</div>
+      <label for="level">Level</label>
+      <select id="level" name="level" required>
+        @foreach(['bph' => 'BPH', 'ketua_biro' => 'Ketua Biro', 'anggota_biro' => 'Anggota Biro'] as $value => $label)
+        <option value="{{ $value }}" @selected(old('level', $k?->level ?? 'bph') === $value)>{{ $label }}</option>
+        @endforeach
+      </select>
+      <div class="hint">BPH tidak terikat biro. Ketua/anggota biro wajib memilih biro.</div>
+      @error('level')<div class="err">{{ $message }}</div>@enderror
     </div>
   </div>
 

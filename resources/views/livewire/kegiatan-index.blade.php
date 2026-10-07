@@ -32,6 +32,8 @@
 <section>
   <div class="wrap">
     <div class="filter-chips">
+      <label for="periode-filter">Periode</label>
+      <select id="periode-filter" wire:model.live="periode"><option value="">Semua periode</option>@foreach($periodeList as $p)<option value="{{ $p->slug }}">{{ $p->nama }}</option>@endforeach</select>
       <button type="button" wire:click="$set('biro', '')" @class(['chip', 'active' => $biro === ''])>Semua</button>
       @foreach ($biroList as $b)
         <button type="button" wire:click="setBiro('{{ $b->slug }}')" @class(['chip', 'active' => $biro === $b->slug])>{{ Str::of($b->nama)->replace('Biro ', '') }}</button>
@@ -45,7 +47,7 @@
           <a href="{{ route('kegiatan.show', $k) }}" class="keg-card">
             <div class="keg-thumb">
               <img src="{{ $k->thumbnail ? asset('storage/'.$k->thumbnail) : asset('images/hero.png') }}" alt="{{ $k->judul }}">
-              @if ($k->biro)<span class="tag">{{ Str::of($k->biro->nama)->replace('Biro ', '') }}</span>@endif
+              @if ($k->biro_label)<span class="tag">{{ Str::of($k->biro_label)->replace('Biro ', '') }}</span>@endif
             </div>
             <div class="keg-body">
               <div class="meta">{{ $k->tanggal->translatedFormat('d F Y') }} @if($k->lokasi)&middot; {{ $k->lokasi }} @endif</div>

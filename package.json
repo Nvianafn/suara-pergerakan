@@ -14,5 +14,10 @@
         "postcss": "^8.4.38",
         "tailwindcss": "^3.4.7",
         "vite": "^5.4.0"
+    },
+    "dependencies": {
+        "@tiptap/core": "^3.31.4",
+        "@tiptap/extension-image": "^3.31.4",
+        "@tiptap/starter-kit": "^3.31.4"
     }
 }

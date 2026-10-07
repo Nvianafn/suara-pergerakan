@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\ActivityLog;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +20,8 @@ class EnsureRole
             return redirect()->route('login');
         }
 
-        if (! empty($roles) && ! in_array($user->role, $roles, true)) {
+        if (! $user->is_active || (! empty($roles) && ! in_array($user->role, $roles, true))) {
+            ActivityLog::record('akses', 'penolakan', $user->id, 'Akses ditolak: '.($request->route()?->getName() ?? 'rute tanpa nama'));
             abort(403, 'Kamu tidak punya akses ke halaman ini.');
         }
 

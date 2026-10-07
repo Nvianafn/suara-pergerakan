@@ -34,6 +34,7 @@
     <div class="crumbs"><a href="{{ route('home') }}">Beranda</a><span>&rsaquo;</span><a href="{{ route('biro.index') }}">Biro</a><span>&rsaquo;</span><span>{{ $biro->nama }}</span></div>
     <span class="eyebrow">Profil Biro</span>
     <h1>{{ $biro->nama }}</h1>
+    @if(! $biro->is_aktif)<p>Arsip — biro nonaktif</p>@endif
     <p>{{ $biro->deskripsi }}</p>
   </div>
 </section>

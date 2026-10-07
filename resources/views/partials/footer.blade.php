@@ -5,13 +5,17 @@
       <div>
         <a class="brand" href="{{ route('home') }}">
           <img class="mark" src="{{ asset('images/logo.png') }}" alt="Logo PMII Rayon Saintek" style="background:none;padding:0;border-radius:50%;object-fit:cover">
-          <span class="brand-txt"><b>{{ Setting::get('nama_rayon', 'PMII Rayon Saintek') }}</b><span>Bergerak &middot; Berpikir &middot; Berkarya</span></span>
+          <span class="brand-txt"><b>{{ Setting::get('nama_rayon', 'PMII Rayon Saintek') }}</b><span>{{ Setting::get('tagline') ?: 'Bergerak · Berpikir · Berkarya' }}</span></span>
         </a>
         <p>{{ Setting::get('deskripsi_singkat') }}</p>
         <div class="socials">
-          <a href="{{ Setting::get('instagram', '#') }}" aria-label="Instagram" target="_blank" rel="noopener">&#128247;</a>
+          @foreach(['instagram' => 'Instagram', 'youtube' => 'YouTube', 'facebook' => 'Facebook', 'tiktok' => 'TikTok', 'x' => 'X'] as $network => $label)
+          @php($socialUrl = Setting::get('sosmed_'.$network))
+          @if($socialUrl && preg_match('~^https?://~i', $socialUrl))
+          <a href="{{ $socialUrl }}" aria-label="{{ $label }}" target="_blank" rel="noopener noreferrer nofollow">{{ $label }}</a>
+          @endif
+          @endforeach
           <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', Setting::get('no_wa', '')) }}" aria-label="WhatsApp" target="_blank" rel="noopener">&#128172;</a>
-          <a href="{{ Setting::get('youtube', '#') }}" aria-label="YouTube" target="_blank" rel="noopener">&#9654;</a>
         </div>
       </div>
       <div class="foot-col">

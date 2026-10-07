@@ -35,8 +35,8 @@
 
     <div class="field">
       <label for="konten">Isi Karya</label>
-      <textarea id="konten" name="konten" class="konten" required placeholder="Tulis isi karya di sini. Boleh pakai HTML sederhana untuk format.">{{ old('konten', $ky?->konten) }}</textarea>
-      <div class="hint">Mendukung HTML dasar (paragraf, heading, kutipan). Konten dirender apa adanya di halaman publik.</div>
+      <textarea id="konten" name="konten" class="konten" data-rich-text required placeholder="Tulis isi karya di sini.">{{ old('konten', $ky?->konten) }}</textarea>
+      <div class="hint">Gunakan toolbar untuk format. HTML diperiksa dan disanitasi server sebelum disimpan.</div>
       @error('konten')<div class="err">{{ $message }}</div>@enderror
     </div>
   </div>
@@ -45,15 +45,21 @@
     <h3>Publikasi</h3>
     <div class="field">
       <label for="status">Status</label>
+      @include('admin._content-scope', ['record' => $ky, 'withBiro' => true])
       <select id="status" name="status">
         <option value="draft" @selected(old('status', $ky?->status) === 'draft')>Draft</option>
-        <option value="published" @selected(old('status', $ky?->status) === 'published')>Published</option>
+        @if(auth()->user()->role !== 'admin_biro')<option value="published" @selected(old('status', $ky?->status) === 'published')>Published</option>@endif
       </select>
       <div class="hint">Draft tidak tampil di publik. Waktu terbit terisi otomatis saat dipublikasikan.</div>
+      @if(auth()->user()->role !== 'admin_biro')
+      <label><input type="checkbox" name="is_featured" value="1" @checked(old('is_featured', $ky?->is_featured))> Karya Pilihan</label>
+      <div class="hint">Hanya karya published, maksimal enam pilihan.</div>
+      @error('is_featured')<div class="err">{{ $message }}</div>@enderror
+      @endif
     </div>
     <div class="field">
-      <label for="published_at">Waktu Terbit (opsional)</label>
-      <input type="datetime-local" id="published_at" name="published_at" class="input" value="{{ old('published_at', $ky?->published_at?->format('Y-m-d\TH:i')) }}">
+      <label>Publikasi pertama</label>
+      <p>{{ $ky?->published_at?->format('d M Y H:i') ?? 'Belum pernah dipublikasikan' }}</p>
     </div>
 
     <h3 style="margin-top:1.5rem">Detail</h3>
@@ -66,13 +72,29 @@
       </select>
     </div>
     <div class="field">
-      <label for="anggota_id">Penulis</label>
+      <label for="penulis_tipe">Mode penulis</label>
+      <select id="penulis_tipe" name="penulis_tipe">
+        @foreach(['anggota' => 'Anggota', 'nama_bebas' => 'Nama bebas', 'anonim' => 'Anonim', 'redaksi' => 'Redaksi'] as $value => $label)
+        <option value="{{ $value }}" @selected(old('penulis_tipe', $ky?->penulis_tipe ?? 'redaksi') === $value)>{{ $label }}</option>
+        @endforeach
+      </select>
+      @error('penulis_tipe')<div class="err">{{ $message }}</div>@enderror
+    </div>
+    <div class="field">
+      <label for="anggota_id">Penulis anggota (hanya mode Anggota)</label>
       <select id="anggota_id" name="anggota_id">
-        <option value="">&mdash; Tim Redaksi &mdash;</option>
+        <option value="">&mdash; Tidak dipilih &mdash;</option>
         @foreach ($anggotaList as $a)
           <option value="{{ $a->id }}" @selected((string) old('anggota_id', $ky?->anggota_id) === (string) $a->id)>{{ $a->nama_lengkap }}</option>
         @endforeach
       </select>
+      @error('anggota_id')<div class="err">{{ $message }}</div>@enderror
+    </div>
+    <div class="field">
+      <label for="penulis_nama">Nama penulis (hanya mode Nama bebas)</label>
+      <input id="penulis_nama" name="penulis_nama" class="input" maxlength="150" value="{{ old('penulis_nama', $ky?->penulis_nama) }}">
+      @error('penulis_nama')<div class="err">{{ $message }}</div>@enderror
+      <div class="hint">Kosongkan anggota/nama yang tidak sesuai mode. Pastikan penulis menyetujui pencantuman namanya sebelum publikasi.</div>
     </div>
     <div class="field">
       <label for="tags">Tags</label>

@@ -8,13 +8,14 @@ class BiroRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return in_array($this->user()?->role, ['super_admin', 'admin'], true);
     }
 
     public function rules(): array
     {
         return [
             'nama' => ['required', 'string', 'max:100'],
+            'is_aktif' => ['nullable', 'boolean'],
             'deskripsi' => ['nullable', 'string'],
             'warna_aksen' => ['nullable', 'regex:/^#([0-9a-fA-F]{6})$/'],
             'urutan' => ['nullable', 'integer', 'min:0', 'max:99'],

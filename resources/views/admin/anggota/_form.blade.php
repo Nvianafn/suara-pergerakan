@@ -67,6 +67,7 @@
     <div class="field">
       <label for="bio">Bio Singkat</label>
       <textarea id="bio" name="bio">{{ old('bio', $a?->bio) }}</textarea>
+      <label><input type="checkbox" name="setuju_publikasi" value="1" @checked(old('setuju_publikasi', $a?->setuju_publikasi))> Setuju publikasi foto dan bio</label>
     </div>
   </div>
 
@@ -74,7 +75,7 @@
     <h3>Foto & Status</h3>
     <div class="field" style="text-align:center">
       @if ($a && $a->foto)
-        <img class="foto-preview" src="{{ asset('storage/'.$a->foto) }}" alt="" style="margin-inline:auto">
+        <img class="foto-preview" src="{{ route('media.anggota', $a->id) }}" alt="" style="margin-inline:auto">
       @else
         <div class="foto-preview" style="margin-inline:auto;display:grid;place-items:center;background:var(--sc-high);font-family:var(--font-serif);font-size:2.4rem;color:var(--primary)">{{ $a?->initial() ?? '?' }}</div>
       @endif

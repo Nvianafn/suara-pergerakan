@@ -8,7 +8,8 @@ class PeriodeRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return in_array($this->user()?->role, ['admin', 'super_admin'], true)
+            && (! $this->boolean('is_aktif') || $this->user()?->role === 'super_admin');
     }
 
     public function rules(): array

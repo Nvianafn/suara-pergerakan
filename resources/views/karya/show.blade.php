@@ -45,7 +45,7 @@
       </div>
 
       <div class="prose">
-        {!! $karya->konten !!}
+        {!! $karya->safe_html !!}
       </div>
 
       @if (!empty($karya->tags))

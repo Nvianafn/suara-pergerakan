@@ -43,6 +43,7 @@
 </div>
 @endif
 
+@include('admin.kepengurusan._pembina')
 <table class="data-table">
   <thead>
     <tr><th>Nama</th><th>Jabatan</th><th>Ketua</th><th>Urut</th><th style="text-align:right">Aksi</th></tr>
@@ -56,8 +57,7 @@
         @if ($rows->count())
         <tr class="grp-row">
           <td colspan="5">
-            {{ $unit->nama }}
-            @if ($unit->isBph())<span class="lvl">Pimpinan</span>@endif
+            {{ $rows->first()->biro_nama ?? $unit->nama }}
             &middot; {{ $rows->count() }} pengurus
           </td>
         </tr>

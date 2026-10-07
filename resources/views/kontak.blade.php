@@ -76,9 +76,16 @@
           <div class="info-row"><span class="ic">&#9993;</span><span><b>Email</b><a href="mailto:{{ Setting::get('email_kontak') }}">{{ Setting::get('email_kontak') }}</a></span></div>
           <div class="info-row"><span class="ic">&#128241;</span><span><b>WhatsApp</b><a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', Setting::get('no_wa', '')) }}">{{ Setting::get('no_wa') }}</a></span></div>
           <div class="info-row"><span class="ic">&#128205;</span><span><b>Sekretariat</b><small>{{ Setting::get('alamat') }}</small></span></div>
-          <div class="info-row"><span class="ic">&#128247;</span><span><b>Instagram</b><a href="{{ Setting::get('instagram', '#') }}" target="_blank" rel="noopener">@pmii.saintek</a></span></div>
+          @foreach(['instagram' => 'Instagram', 'youtube' => 'YouTube', 'facebook' => 'Facebook', 'tiktok' => 'TikTok', 'x' => 'X'] as $network => $label)
+          @php($url = Setting::get('sosmed_'.$network))
+          @if($url && preg_match('~^https?://~i', $url))
+          <div class="info-row"><span class="ic">&#128247;</span><span><b>{{ $label }}</b><a href="{{ $url }}" target="_blank" rel="noopener noreferrer nofollow">{{ $label }}</a></span></div>
+          @endif
+          @endforeach
         </div>
-        <div class="map-embed" style="display:block;padding:0"><iframe src="https://www.google.com/maps?q={{ urlencode(\App\Models\Setting::get('alamat', 'Purwokerto')) }}&amp;output=embed&amp;z=15" style="width:100%;height:100%;border:0;display:block" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen title="Lokasi Sekretariat PMII Rayon Saintek"></iframe></div>
+        @if(Setting::get('peta_url') && str_starts_with(Setting::get('peta_url'), 'https://'))
+        <a class="btn btn-primary" href="{{ Setting::get('peta_url') }}" target="_blank" rel="noopener noreferrer nofollow">Buka lokasi di Google Maps</a>
+        @endif
       </div>
     </div>
   </div>

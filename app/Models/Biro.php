@@ -11,10 +11,14 @@ class Biro extends Model
 {
     use HasSlug;
 
+    protected $attributes = ['is_aktif' => true];
+
+    protected $casts = ['is_aktif' => 'boolean'];
+
     protected $table = 'biro';
 
     protected $fillable = [
-        'nama', 'slug', 'tipe', 'deskripsi', 'logo', 'warna_aksen', 'urutan',
+        'nama', 'slug', 'tipe', 'deskripsi', 'logo', 'warna_aksen', 'urutan', 'is_aktif',
     ];
 
     public function isBph(): bool

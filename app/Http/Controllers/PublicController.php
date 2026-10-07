@@ -8,6 +8,7 @@ use App\Models\Karya;
 use App\Models\Kegiatan;
 use App\Models\Kepengurusan;
 use App\Models\Periode;
+use App\Services\FeaturedWorks;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -22,9 +23,9 @@ class PublicController extends Controller
             ->bph()->orderBy('urutan')->take(2)->get();
 
         return view('home', [
-            'biro' => Biro::unitBiro()->orderBy('urutan')->get(),
-            'kegiatanTerbaru' => Kegiatan::with('biro')->published()->latest('tanggal')->take(3)->get(),
-            'karyaPilihan' => Karya::with('anggota')->published()->latest('published_at')->take(5)->get(),
+            'biro' => Biro::unitBiro()->where('is_aktif', true)->orderBy('urutan')->get(),
+            'kegiatanTerbaru' => Kegiatan::with('biro')->published()->latest('published_at')->take(3)->get(),
+            'karyaPilihan' => app(FeaturedWorks::class)->forHome(),
             'bph' => $bph,
             'periodeAktif' => $periodeAktif,
             'stats' => [
@@ -52,7 +53,7 @@ class PublicController extends Controller
     public function biroIndex(): View
     {
         return view('biro.index', [
-            'biro' => Biro::unitBiro()->withCount(['kepengurusan', 'kegiatan'])->orderBy('urutan')->get(),
+            'biro' => Biro::unitBiro()->where('is_aktif', true)->withCount(['kepengurusan', 'kegiatan'])->orderBy('urutan')->get(),
         ]);
     }
 
@@ -64,11 +65,14 @@ class PublicController extends Controller
             $q->where('periode_id', $periodeAktif?->id)
                 ->with('anggota')->orderBy('urutan');
         }]);
+        if (! $biro->is_aktif) {
+            $biro->setRelation('kepengurusan', collect());
+        }
 
         return view('biro.show', [
             'biro' => $biro,
             'ketua' => $biro->kepengurusan->firstWhere('is_ketua', true),
-            'kegiatan' => $biro->kegiatan()->published()->latest('tanggal')->take(4)->get(),
+            'kegiatan' => $biro->kegiatan()->published()->latest('published_at')->take(4)->get(),
         ]);
     }
 
@@ -80,7 +84,7 @@ class PublicController extends Controller
         return view('kegiatan.show', [
             'kegiatan' => $kegiatan,
             'lainnya' => Kegiatan::published()->where('id', '!=', $kegiatan->id)
-                ->latest('tanggal')->take(3)->get(),
+                ->latest('published_at')->take(3)->get(),
         ]);
     }
 

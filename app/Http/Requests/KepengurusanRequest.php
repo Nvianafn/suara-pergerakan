@@ -4,12 +4,13 @@ namespace App\Http\Requests;
 
 use App\Models\Kepengurusan;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class KepengurusanRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return in_array($this->user()?->role, ['admin', 'super_admin'], true);
     }
 
     public function rules(): array
@@ -19,7 +20,8 @@ class KepengurusanRequest extends FormRequest
         return [
             'periode_id' => ['required', 'exists:periode,id'],
             'anggota_id' => ['required', 'exists:anggota,id'],
-            'biro_id' => ['required', 'exists:biro,id'],
+            'level' => ['required', 'in:bph,ketua_biro,anggota_biro'],
+            'biro_id' => ['exclude_if:level,bph', 'required', Rule::exists('biro', 'id')->where('tipe', 'biro')],
             'jabatan' => ['required', 'string', 'max:100'],
             'is_ketua' => ['nullable', 'boolean'],
             'urutan' => ['nullable', 'integer', 'min:0', 'max:127'],
@@ -28,6 +30,7 @@ class KepengurusanRequest extends FormRequest
                     $exists = Kepengurusan::where('anggota_id', $this->anggota_id)
                         ->where('periode_id', $this->periode_id)
                         ->where('jabatan', $this->jabatan)
+                        ->where('biro_id', $this->level === 'bph' ? null : $this->biro_id)
                         ->when($id, fn ($q) => $q->where('id', '!=', $id))
                         ->exists();
                     if ($exists) {

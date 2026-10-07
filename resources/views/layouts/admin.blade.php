@@ -52,6 +52,8 @@
     ['label' => 'Kepengurusan', 'route' => 'admin.kepengurusan.index', 'ic' => '&#129309;'],
     ['group' => 'Sistem'],
     ['label' => 'Pengaturan', 'route' => 'admin.settings.edit', 'ic' => '&#9881;'],
+    ['label' => 'Riwayat Aktivitas', 'route' => 'admin.riwayat.index', 'ic' => '&#128203;'],
+    ['label' => 'Sampah Konten', 'route' => 'admin.trash.index', 'ic' => '&#128465;'],
   ];
 @endphp
 <div class="admin-shell">
@@ -62,6 +64,7 @@
     </div>
     <nav>
       @foreach ($menu as $item)
+        @continue(auth()->user()->role === 'admin_biro' && isset($item['route']) && ! in_array($item['route'], ['admin.dashboard', 'admin.kegiatan.index', 'admin.karya.index', 'admin.anggota.index'], true))
         @if (isset($item['group']))
           <div class="nav-group">{{ $item['group'] }}</div>
         @else
@@ -78,6 +81,9 @@
         </a>
       @endif
     </nav>
+    @if(auth()->user()->role === 'admin_biro')
+      <a class="nav-link" href="{{ route('admin.biro.description.edit', auth()->user()->biro_id) }}">Deskripsi Biro Saya</a>
+    @endif
   </aside>
 
   <div class="admin-main">

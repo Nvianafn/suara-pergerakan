@@ -21,10 +21,16 @@
 @endpush
 
 @section('content')
-<form method="POST" action="{{ route('admin.settings.update') }}" class="settings-wrap">
+<form method="POST" action="{{ route('admin.settings.update') }}" class="settings-wrap" enctype="multipart/form-data">
   @csrf @method('PUT')
+  <nav aria-label="Bagian pengaturan" class="settings-tabs" style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+    <a href="#settings-general">Umum</a>
+    <a href="#settings-about">Halaman Tentang</a>
+    <a href="#settings-contact">Kontak &amp; Sosmed</a>
+    <a href="#settings-appearance">Tampilan &amp; SEO</a>
+  </nav>
 
-  <div class="card">
+  <div class="card" id="settings-general">
     <h3>Identitas Rayon</h3>
     <p class="sub">Nama dan deskripsi yang tampil di seluruh situs.</p>
     <div class="field">
@@ -37,10 +43,26 @@
       <textarea id="deskripsi_singkat" name="deskripsi_singkat">{{ old('deskripsi_singkat', $settings['deskripsi_singkat']) }}</textarea>
       @error('deskripsi_singkat')<div class="err">{{ $message }}</div>@enderror
     </div>
+    <div class="field">
+      <label for="tagline">Tagline</label>
+      <input id="tagline" name="tagline" class="input" maxlength="200" value="{{ old('tagline', $settings['tagline']) }}">
+      @error('tagline')<div class="err">{{ $message }}</div>@enderror
+    </div>
   </div>
 
   <div class="card">
-    <h3>Kontak</h3>
+    <h3 id="settings-about">Halaman Tentang</h3>
+    @foreach(['tentang_deskripsi' => 'Deskripsi organisasi', 'tentang_sejarah' => 'Sejarah', 'visi' => 'Visi', 'misi' => 'Misi'] as $key => $label)
+    <div class="field">
+      <label for="{{ $key }}">{{ $label }}</label>
+      <textarea id="{{ $key }}" name="{{ $key }}" @if($key !== 'visi') data-rich-text @endif>{{ old($key, $settings[$key]) }}</textarea>
+      @error($key)<div class="err">{{ $message }}</div>@enderror
+    </div>
+    @endforeach
+  </div>
+
+  <div class="card">
+    <h3 id="settings-contact">Kontak</h3>
     <p class="sub">Digunakan di halaman Kontak dan footer.</p>
     <div class="form-grid-2">
       <div class="field">
@@ -57,27 +79,38 @@
       <label for="alamat">Alamat Sekretariat</label>
       <input type="text" id="alamat" name="alamat" class="input" value="{{ old('alamat', $settings['alamat']) }}">
     </div>
+    <div class="field">
+      <label for="peta_url">Tautan Google Maps (tanpa iframe)</label>
+      <input type="url" id="peta_url" name="peta_url" class="input" value="{{ old('peta_url', $settings['peta_url']) }}">
+      @error('peta_url')<div class="err">{{ $message }}</div>@enderror
+    </div>
   </div>
 
   <div class="card">
     <h3>Media Sosial</h3>
     <p class="sub">Tautan lengkap (mis. https://instagram.com/...). Kosongkan jika tidak dipakai.</p>
+    @foreach(['instagram' => 'Instagram', 'facebook' => 'Facebook', 'youtube' => 'YouTube', 'tiktok' => 'TikTok', 'x' => 'X'] as $network => $label)
+    @php($key = 'sosmed_'.$network)
     <div class="field">
-      <label for="instagram">Instagram</label>
-      <input type="text" id="instagram" name="instagram" class="input" value="{{ old('instagram', $settings['instagram']) }}">
+      <label for="{{ $key }}">{{ $label }}</label>
+      <input type="url" id="{{ $key }}" name="{{ $key }}" class="input" value="{{ old($key, $settings[$key]) }}">
+      @error($key)<div class="err">{{ $message }}</div>@enderror
     </div>
-    <div class="form-grid-2">
-      <div class="field">
-        <label for="facebook">Facebook</label>
-        <input type="text" id="facebook" name="facebook" class="input" value="{{ old('facebook', $settings['facebook']) }}">
-      </div>
-      <div class="field">
-        <label for="youtube">YouTube</label>
-        <input type="text" id="youtube" name="youtube" class="input" value="{{ old('youtube', $settings['youtube']) }}">
-      </div>
-    </div>
+    @endforeach
   </div>
 
+    <div class="card" id="settings-appearance">
+      <h3>Tampilan &amp; SEO</h3>
+      <p class="sub">JPG, PNG, atau WebP; maksimal 5 MB per file. Gambar diproses ulang menjadi WebP. Kosongkan untuk mempertahankan gambar saat ini.</p>
+      @foreach(['logo' => 'Logo', 'favicon' => 'Favicon', 'hero_image' => 'Gambar Hero', 'og_image' => 'Gambar Social Media (OG)'] as $key => $label)
+      <div class="field">
+        <label for="{{ $key }}">{{ $label }}</label>
+        @if($settings[$key])<img src="{{ \App\Models\Setting::imageUrl($key, 'og-image.png') }}" alt="Preview {{ $label }}" style="max-width:100%;max-height:180px;object-fit:contain">@endif
+        <input type="file" id="{{ $key }}" name="{{ $key }}" accept="image/jpeg,image/png,image/webp" class="input">
+        @error($key)<div class="err">{{ $message }}</div>@enderror
+      </div>
+      @endforeach
+    </div>
   <div class="save-bar">
     <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
   </div>

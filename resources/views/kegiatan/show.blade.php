@@ -31,7 +31,7 @@
 <section class="page-hero">
   <div class="wrap">
     <div class="crumbs"><a href="{{ route('home') }}">Beranda</a><span>&rsaquo;</span><a href="{{ route('kegiatan.index') }}">Kegiatan</a><span>&rsaquo;</span><span>{{ Str::limit($kegiatan->judul, 40) }}</span></div>
-    @if ($kegiatan->biro)<span class="eyebrow">{{ $kegiatan->biro->nama }}</span>@endif
+    @if ($kegiatan->biro_label)<span class="eyebrow">{{ $kegiatan->biro_label }}</span>@endif
     <h1>{{ $kegiatan->judul }}</h1>
     <p>{{ $kegiatan->tanggal->translatedFormat('l, d F Y') }} @if($kegiatan->lokasi)&middot; {{ $kegiatan->lokasi }} @endif</p>
   </div>
@@ -44,9 +44,7 @@
     </div>
     <div class="keg-layout">
       <div class="keg-article reveal">
-        @foreach (preg_split('/\n\s*\n/', (string) $kegiatan->deskripsi) as $par)
-          @if (trim($par) !== '')<p>{{ $par }}</p>@endif
-        @endforeach
+        {!! $kegiatan->safe_html !!}
 
         @if ($kegiatan->foto->count())
         <h3 style="margin-top:1rem">Dokumentasi</h3>
@@ -63,7 +61,7 @@
           <h4>Detail Kegiatan</h4>
           <div class="info-row"><span class="ic">&#128197;</span><span><b>{{ $kegiatan->tanggal->translatedFormat('d F Y') }}</b><small>Tanggal pelaksanaan</small></span></div>
           @if ($kegiatan->lokasi)<div class="info-row"><span class="ic">&#128205;</span><span><b>{{ $kegiatan->lokasi }}</b><small>Lokasi</small></span></div>@endif
-          @if ($kegiatan->biro)<div class="info-row"><span class="ic">&#127942;</span><span><b>{{ $kegiatan->biro->nama }}</b><small>Penyelenggara</small></span></div>@endif
+          @if ($kegiatan->biro_label)<div class="info-row"><span class="ic">&#127942;</span><span><b>{{ $kegiatan->biro_label }}</b><small>Penyelenggara</small></span></div>@endif
         </div>
 
         @if ($lainnya->count())

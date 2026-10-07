@@ -45,12 +45,14 @@
     <label for="deskripsi">Deskripsi</label>
     <textarea id="deskripsi" name="deskripsi">{{ old('deskripsi', $p?->deskripsi) }}</textarea>
   </div>
+  @if(auth()->user()->role === 'super_admin')
   <div class="field">
     <label class="switch">
       <input type="checkbox" name="is_aktif" value="1" @checked(old('is_aktif', $p?->is_aktif))>
       <span><b>Jadikan periode aktif</b><small>Periode aktif yang tampil sebagai default di situs. Periode lain akan otomatis dinonaktifkan.</small></span>
     </label>
   </div>
+  @endif
   <div class="form-actions">
     <button type="submit" class="btn btn-primary">Simpan</button>
     <a href="{{ route('admin.periode.index') }}" class="btn-sm" style="display:inline-flex;align-items:center">Batal</a>

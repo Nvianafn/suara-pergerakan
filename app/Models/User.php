@@ -10,8 +10,10 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    protected $attributes = ['is_active' => true];
+
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'anggota_id',
+        'name', 'email', 'password', 'role', 'anggota_id', 'biro_id', 'is_active',
     ];
 
     protected $hidden = [
@@ -23,6 +25,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
+            'biro_id' => 'integer',
         ];
     }
 

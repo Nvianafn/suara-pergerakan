@@ -50,7 +50,7 @@
         <div class="cell-name">
           <span class="av-sm">
             @if($u->anggota && $u->anggota->foto)
-              <img src="{{ asset('storage/'.$u->anggota->foto) }}" alt="">
+              <img src="{{ route('media.anggota', $u->anggota->id) }}" alt="">
             @else
               {{ strtoupper(substr($u->name, 0, 2)) }}
             @endif

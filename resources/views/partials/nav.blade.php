@@ -3,8 +3,8 @@
   <div class="wrap">
     <nav class="nav glass">
       <a class="brand" href="{{ route('home') }}">
-        <img class="mark" src="{{ asset('images/logo.png') }}" alt="Logo PMII Rayon Saintek" style="background:none;padding:0;border-radius:50%;object-fit:cover">
-        <span class="brand-txt"><b>{{ Setting::get('nama_rayon', 'PMII Rayon Saintek') }}</b><span>Bergerak &middot; Berpikir &middot; Berkarya</span></span>
+        <img class="mark" src="{{ Setting::imageUrl('logo', 'images/logo.png') }}" alt="Logo PMII Rayon Saintek" style="background:none;padding:0;border-radius:50%;object-fit:cover">
+        <span class="brand-txt"><b>{{ Setting::get('nama_rayon', 'PMII Rayon Saintek') }}</b><span>{{ Setting::get('tagline') ?: 'Bergerak · Berpikir · Berkarya' }}</span></span>
       </a>
       <div class="nav-links">
         <a href="{{ route('tentang') }}" @class(['active' => request()->routeIs('tentang')])>Tentang</a>

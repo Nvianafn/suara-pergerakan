@@ -35,6 +35,11 @@
 @endpush
 
 @section('content')
+@php
+  $about = app(\App\Services\HtmlSanitizer::class)->clean(\App\Models\Setting::get('tentang_deskripsi', ''));
+  $history = app(\App\Services\HtmlSanitizer::class)->clean(\App\Models\Setting::get('tentang_sejarah', ''));
+  $mission = app(\App\Services\HtmlSanitizer::class)->clean(\App\Models\Setting::get('misi', ''));
+@endphp
 <section class="page-hero">
   <div class="wrap">
     <div class="crumbs"><a href="{{ route('home') }}">Beranda</a><span>&rsaquo;</span><span>Tentang</span></div>
@@ -50,8 +55,12 @@
       <div class="reveal">
         
         <h2 style="margin:.6rem 0 1.2rem">Pergerakan yang Berakar pada Ilmu &amp; Iman</h2>
+        @if($about)
+        <div class="prose">{!! $about !!}</div>
+        @else
         <p>PMII Rayon Saintek adalah bagian dari Pergerakan Mahasiswa Islam Indonesia yang berhimpun di lingkungan Fakultas Sains dan Teknologi. Kami menjadi wadah bagi mahasiswa untuk tumbuh sebagai kader yang intelektual, religius, dan berpihak pada kepentingan umat serta bangsa.</p>
         <p>Berlandaskan nilai Ahlussunnah wal Jama&rsquo;ah An-Nahdliyah, kami memadukan tradisi keilmuan, spiritualitas, dan aksi sosial dalam satu tarikan napas pergerakan.</p>
+        @endif
         <div class="about-values" style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.4rem">
           <span class="chip">Dzikir</span><span class="chip">Fikir</span><span class="chip">Amal Sholeh</span>
         </div>
@@ -65,6 +74,9 @@
   </div>
 </section>
 
+@if($history)
+<section style="padding-top:0"><div class="wrap"><h2>Sejarah</h2><div class="prose">{!! $history !!}</div></div></section>
+@endif
 <section style="padding-top:0">
   <div class="wrap">
     <div class="stat-row">
@@ -82,17 +94,21 @@
       <div class="vm-card glass reveal">
         <div class="ic">&#127919;</div>
         <h3>Visi</h3>
-        <p style="color:var(--on-surface-variant)">Terbentuknya kader Saintek yang bertakwa, berintelektual tinggi, dan berkomitmen pada nilai kemanusiaan serta pergerakan.</p>
+        <p style="color:var(--on-surface-variant)">{{ \App\Models\Setting::get('visi') ?: 'Terbentuknya kader Saintek yang bertakwa, berintelektual tinggi, dan berkomitmen pada nilai kemanusiaan serta pergerakan.' }}</p>
       </div>
       <div class="vm-card glass reveal">
         <div class="ic">&#128203;</div>
         <h3>Misi</h3>
+        @if($mission)
+        <div class="prose">{!! $mission !!}</div>
+        @else
         <ul>
           <li>Membina kader melalui kaderisasi berjenjang</li>
           <li>Mengembangkan tradisi keilmuan dan riset</li>
           <li>Menguatkan nilai keislaman Aswaja</li>
           <li>Menggerakkan pengabdian pada masyarakat</li>
         </ul>
+        @endif
       </div>
     </div>
   </div>

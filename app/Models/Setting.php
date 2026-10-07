@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Services\HtmlSanitizer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class Setting extends Model
 {
@@ -17,7 +19,11 @@ class Setting extends Model
             return static::pluck('value', 'key')->toArray();
         });
 
-        return $all[$key] ?? $default;
+        $aliases = ['instagram' => 'sosmed_instagram', 'facebook' => 'sosmed_facebook', 'youtube' => 'sosmed_youtube'];
+        $canonical = $aliases[$key] ?? $key;
+        $legacy = array_search($canonical, $aliases, true);
+
+        return $all[$canonical] ?? ($legacy ? ($all[$legacy] ?? $default) : $default);
     }
 
     public static function put(string $key, $value): void
@@ -26,8 +32,20 @@ class Setting extends Model
         Cache::forget('settings.all');
     }
 
+    public static function imageUrl(string $key, string $fallback): string
+    {
+        $path = static::get($key);
+
+        return $path ? Storage::disk('public')->url($path) : asset($fallback);
+    }
+
     protected static function booted(): void
     {
+        static::saving(function (self $setting) {
+            if (in_array($setting->key, ['tentang_deskripsi', 'tentang_sejarah', 'misi'], true)) {
+                $setting->value = app(HtmlSanitizer::class)->clean($setting->value);
+            }
+        });
         static::saved(fn () => Cache::forget('settings.all'));
         static::deleted(fn () => Cache::forget('settings.all'));
     }
