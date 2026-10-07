@@ -4,13 +4,13 @@
 
 @push('styles')
 <style>
-.about-lead{display:grid;grid-template-columns:1.1fr .9fr;gap:4rem;align-items:center}
+.about-lead{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:3rem;align-items:center}
 .about-lead p{color:var(--on-surface-variant);margin-bottom:1.1rem}
-.about-quote{border-radius:1.25rem;padding:2.5rem;background:linear-gradient(120deg,#002068,#003399);color:#fff;position:relative;overflow:hidden}
+.about-quote{border-radius:1.25rem;padding:clamp(1.5rem,3vw,2.5rem);background:linear-gradient(120deg,#002068,#003399);color:#fff;position:relative;overflow:hidden;min-width:0;isolation:isolate}
 .about-quote::after{content:"";position:absolute;right:-10%;top:-30%;width:50%;height:160%;background:radial-gradient(circle,rgba(252,212,0,.2),transparent 65%)}
-.about-quote .mark{font-family:var(--font-serif);font-size:4rem;line-height:.6;color:var(--gold)}
-.about-quote p{font-family:var(--font-serif);font-style:italic;font-size:1.3rem;line-height:1.5;position:relative;z-index:2;margin:1rem 0}
-.about-quote small{color:var(--on-primary-container);position:relative;z-index:2}
+.about-quote .mark{display:block;font-family:var(--font-serif);font-size:4rem;line-height:1;color:var(--gold);position:relative;z-index:2;margin-bottom:.5rem}
+.about-lead .about-quote p{font-family:var(--font-serif);font-style:italic;font-size:clamp(1.25rem,2vw,1.5rem);line-height:1.6;color:#fff;position:relative;z-index:2;margin:0 0 1.25rem;overflow-wrap:anywhere}
+.about-quote small{display:block;font-size:14px;line-height:1.6;color:#c8d6f2;position:relative;z-index:2}
 .vm-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem}
 .vm-card{padding:2rem;border-radius:1rem}
 .vm-card .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:24px;margin-bottom:1rem;background:var(--sc);color:var(--primary)}
@@ -66,7 +66,7 @@
         </div>
       </div>
       <div class="about-quote reveal">
-        <div class="mark">&ldquo;</div>
+        <div class="mark" aria-hidden="true">&ldquo;</div>
         <p>Tangan terkepal dan maju ke muka.</p>
         <small>Semboyan Pergerakan</small>
       </div>
