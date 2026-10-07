@@ -38,9 +38,10 @@
 @media(max-width:860px){.admin-shell{grid-template-columns:1fr}.admin-side{position:fixed;z-index:60;width:264px;transform:translateX(-105%);transition:.25s}.admin-side.open{transform:none}}
 </style>
 @stack('styles')
+@vite('resources/css/admin.css')
     <style>[x-cloak]{display:none!important}</style>
 </head>
-<body>
+<body class="admin-body">
 @php
   $menu = [
     ['group' => 'Utama'],
@@ -72,7 +73,7 @@
           <div class="nav-group">{{ $item['group'] }}</div>
         @else
           @php $has = \Illuminate\Support\Facades\Route::has($item['route']); @endphp
-          <a class="nav-link @if($has && request()->routeIs($item['route'].'*')) active @endif" href="{{ $has ? route($item['route']) : '#' }}">
+           <a class="nav-link @if($has && request()->routeIs(str_replace('.index', '.*', $item['route']))) active @endif" href="{{ $has ? route($item['route']) : '#' }}">
             <span class="ic">{!! $item['ic'] !!}</span> {{ $item['label'] }}
           </a>
         @endif

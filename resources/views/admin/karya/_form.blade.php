@@ -44,8 +44,8 @@
   <aside class="form-side">
     <h3>Publikasi</h3>
     <div class="field">
-      <label for="status">Status</label>
       @include('admin._content-scope', ['record' => $ky, 'withBiro' => true])
+      <label for="status">Status</label>
       <select id="status" name="status">
         <option value="draft" @selected(old('status', $ky?->status) === 'draft')>Draft</option>
         @if(auth()->user()->role !== 'admin_biro')<option value="published" @selected(old('status', $ky?->status) === 'published')>Published</option>@endif
