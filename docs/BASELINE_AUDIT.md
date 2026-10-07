@@ -225,6 +225,10 @@ R2 publik yang disepakati: `pmiisaintek-assets`. Bucket privat `pmiisaintek-priv
 - Textarea tetap menjadi fallback jika JavaScript belum tersedia; saat editor siap, submit menyinkronkan HTML ke field asli. Baris baru legacy plain text dikonversi dengan text nodes dan br, bukan interpolasi HTML. Deskripsi kegiatan tetap opsional, konten karya wajib.
 - npm ci dan build berhasil. Smoke runtime jsdom di luar repo memverifikasi inisialisasi dua editor, baris baru, deskripsi kosong opsional, sinkronisasi submit, dan toolbar berlabel. ContentSafetyTest: 5 test / 36 assertion lulus. Pemeriksaan visual browser belum tersedia karena browser desktop tidak terhubung. npm audit masih melaporkan 16 vulnerability baseline.
 
+## Verifikasi final image GD/WebP
+- Build development berhasil dengan WebP enabled, PHP 8.4.26, sqlsrv/pdo_sqlsrv 5.13.3. Tes gambar asli PNG privat dan JPEG publik: 2 test / 11 assertion lulus (konversi WebP, resize, payload tambahan terhapus, file dapat dihapus).
+- Suite SQL Server lengkap pada suara_pergerakan_test: 74 test / 378 assertion lulus tanpa skip. Container preview dibuat ulang memakai image baru; homepage dan login HTTP 200. Penyimpanan R2 dan deployment Azure tetap belum diverifikasi.
+
 ## Batas upload galeri
 - Kegiatan: maksimal 20 foto galeri tersimpan, 5 MB per gambar, total 40 MB per penyimpanan termasuk thumbnail. Thumbnail karya juga 5 MB. Validasi MIME/image tetap memakai deteksi server.
 - Edit menghitung foto yang sudah ada, mengurangi hanya ID penghapusan milik kegiatan itu, lalu menambahkan upload baru. Pemeriksaan diulang dalam transaksi setelah lockForUpdate pada kegiatan untuk menyerialkan perubahan galeri bersamaan. Penghapusan foto tetap hanya super_admin.
