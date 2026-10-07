@@ -63,7 +63,7 @@ class PasswordController extends Controller
                 throw ValidationException::withMessages(['email' => 'Tautan reset tidak valid atau sudah kedaluwarsa.']);
             }
             DB::transaction(function () use ($user, $password) {
-                $user->update(['password' => $password, 'must_change_password' => true, 'remember_token' => Str::random(60)]);
+                $user->update(['password' => $password, 'must_change_password' => false, 'remember_token' => Str::random(60)]);
                 DB::table('sessions')->where('user_id', $user->id)->delete();
                 ActivityLog::record('user', 'perubahan', $user->id, 'Password akun direset melalui tautan email.');
             });
@@ -72,6 +72,6 @@ class PasswordController extends Controller
             throw ValidationException::withMessages(['email' => 'Tautan reset tidak valid atau sudah kedaluwarsa.']);
         }
 
-        return redirect()->route('login')->with('status', 'Password direset. Masuk untuk mengganti password sebelum membuka CMS.');
+        return redirect()->route('login')->with('status', 'Password berhasil direset. Silakan masuk dengan password baru.');
     }
 }

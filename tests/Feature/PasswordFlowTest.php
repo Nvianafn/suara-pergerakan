@@ -34,13 +34,14 @@ class PasswordFlowTest extends TestCase
         $this->seed();
         Notification::fake();
         $user = User::first();
+        $user->update(['must_change_password' => true]);
         $this->post(route('password.email'), ['email' => $user->email])->assertSessionHas('status');
         Notification::assertSentTo($user, ResetPassword::class);
         $token = Password::createToken($user);
         $data = ['email' => $user->email, 'token' => $token, 'password' => 'reset-password', 'password_confirmation' => 'reset-password'];
         $this->post(route('password.store'), $data)->assertRedirect(route('login'));
         $this->assertTrue(Hash::check('reset-password', $user->fresh()->password));
-        $this->assertTrue($user->fresh()->must_change_password);
+        $this->assertFalse($user->fresh()->must_change_password);
         $this->post(route('password.store'), $data)->assertSessionHasErrors('email');
         $user->update(['is_active' => false]);
         Notification::fake();
@@ -48,5 +49,9 @@ class PasswordFlowTest extends TestCase
         Notification::assertNothingSent();
         $data['token'] = Password::createToken($user);
         $this->post(route('password.store'), $data)->assertSessionHasErrors('email');
+        $user->update(['is_active' => true]);
+        $this->post(route('login'), ['email' => $user->email, 'password' => 'password'])->assertSessionHasErrors('email');
+        $this->post(route('login'), ['email' => $user->email, 'password' => 'reset-password'])->assertRedirect(route('admin.dashboard'));
+        $this->get(route('admin.dashboard'))->assertOk();
     }
 }

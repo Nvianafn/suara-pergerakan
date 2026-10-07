@@ -1,5 +1,13 @@
 # Panduan Deploy — Website PMII Rayon Saintek
 
+> **Panduan legacy, bukan prosedur production saat ini.** Isi di bawah berasal
+> dari baseline AWS/MySQL/Laravel 11. Target aktif mengikuti `PRD_v1.6.md`:
+> Laravel 13, Azure SQL, Azure Container Apps, GHCR dan R2. Jangan gunakan
+> akun dummy, seeding development, atau storage publik untuk foto privat.
+> Bootstrap production: `docs/INITIAL_ADMIN.md`; media: `docs/R2_STORAGE.md`;
+> email: `docs/BREVO_SMTP.md`. Pipeline/image production Azure masih perlu
+> disiapkan dan diverifikasi sebelum deployment.
+
 Target: **Ubuntu 24.04 LTS (AWS EC2)** · Domain **rayonsaintek.com** · Stack: Laravel 11 + Livewire 3 + MySQL 8 + Nginx + PHP 8.3
 
 ---
