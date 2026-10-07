@@ -36,4 +36,12 @@ Cleanup menyimpan nama disk saat pekerjaan dibuat sehingga retry tetap menghapus
 - Runtime lokal memakai `PUBLIC_MEDIA_DISK=r2_public`. Domain utama saat ini diarahkan ke R2; sebelum website dipasang pada domain utama, hubungkan `assets.rayonsaintek.com` ke bucket dan perbarui URL aset.
 - Tes otomatis SQL Server: 82 test / 429 assertion lulus. Build frontend lulus; audit dependency masih mencatat 16 temuan (5 moderate, 11 high).
 
-Pengujian ini membuktikan akses storage dan konversi nyata. Verifikasi akses foto melalui aplikasi dengan R2 nyata dan persistensi setelah recreate container masih perlu dilakukan sebelum deployment.
+Verifikasi lanjutan: foto anggota/Pembina melalui controller Laravel dengan objek R2 nyata lulus 1 test / 33 assertion, mencakup izin, penempatan Pembina, pencabutan persetujuan, penolakan admin_biro, byte stream, dan cache privat/no-store. Kedua bucket tetap dapat dibaca setelah container aplikasi force-recreate; objek tes dihapus dan homepage kembali HTTP 200.
+
+Tes integrasi nyata dijalankan secara eksplisit pada database test, terpisah dari suite rutin agar CI tidak membutuhkan secrets R2:
+
+```bash
+/tmp/opencode/docker-compose --env-file /tmp/opencode/suara-sqlserver.env run --rm --no-deps -e DB_DATABASE=suara_pergerakan_test -e RUN_R2_INTEGRATION=1 app vendor/bin/phpunit -c phpunit.sqlserver.xml tests/Integration/R2PhotoAccessTest.php
+```
+
+Cleanup foto privat sekarang masuk antrean durable, termasuk rollback upload; kegagalan delete dipertahankan untuk retry. Suite SQL Server sesudah perubahan: 83 test / 436 assertion lulus.

@@ -13,7 +13,8 @@ class PrivateImageService
     public function delete(?string $path): void
     {
         if ($path) {
-            Storage::disk('r2_private')->delete($path);
+            MediaCleanup::enqueue('r2_private', $path);
+            MediaCleanup::run();
         }
     }
 
