@@ -18,6 +18,13 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            foreach (['nama_rayon', 'tagline', 'deskripsi_singkat', 'tentang_deskripsi', 'tentang_sejarah', 'visi', 'misi', 'email_kontak', 'no_wa', 'alamat', 'peta_url', 'sosmed_instagram', 'sosmed_youtube', 'sosmed_tiktok', 'sosmed_facebook', 'sosmed_x', 'logo', 'favicon', 'hero_image', 'og_image'] as $key) {
+                Setting::firstOrCreate(['key' => $key], ['value' => '']);
+            }
+
+            return;
+        }
         // ---- Super Admin ----
         $admin = User::create([
             'name' => 'Super Admin',

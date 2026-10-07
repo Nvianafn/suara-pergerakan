@@ -228,6 +228,8 @@ R2 publik yang disepakati: `pmiisaintek-assets`. Bucket privat `pmiisaintek-priv
 ## Verifikasi final image GD/WebP
 
 ## Password akun
+- Bootstrap production ditambahkan melalui app:buat-super-admin, input interaktif tersembunyi atau INITIAL_ADMIN_* untuk job noninteraktif. Menolak super_admin existing termasuk nonaktif; SQL Server menyerialkan bootstrap dengan transaction-owned lock. Akun pertama selalu wajib ganti password. Production seeder hanya membuat kunci settings kosong tanpa akun/data dummy dan tanpa menimpa nilai existing. Panduan: docs/INITIAL_ADMIN.md.
+- Tes bootstrap, secrets kosong, dan seeder production: masing-masing SQLite/SQL Server 3 test / 14 assertion lulus.
 - Akun baru dan password yang diatur ulang super_admin ditandai must_change_password. Middleware web memblokir request akun tersebut kecuali ganti password/logout, termasuk endpoint tulis. Halaman /admin/ganti-password meminta password saat ini, konfirmasi, minimal 8 karakter, dan password berbeda; sukses membuka CMS kembali.
 - Forgot/reset menggunakan broker Laravel, notifikasi email, token satu kali, respons generik, penolakan akun nonaktif, serta throttle login/reset/ganti password. Reset email juga mewajibkan ganti password sesuai acceptance PRD. Reset/ganti password memutar remember token dan membersihkan sesi lama; audit tidak menyimpan rahasia dan input password/token tidak di-flash.
 - Suite SQL Server: 76 test / 405 assertion lulus. SQLite: 76 test / 379 assertion, 9 skip. Setelah penambahan invalidasi sesi admin, tes terarah SQL Server: 5 test / 45 assertion lulus. Migration development, npm ci/build, Pint dan diff check berhasil.
