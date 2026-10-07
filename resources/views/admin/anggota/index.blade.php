@@ -30,6 +30,7 @@
 @endpush
 
 @section('content')
+@include('admin.anggota.filters')
 <div class="toolbar">
   <p>Total {{ $anggota->total() }} anggota terdata.</p>
   <a href="{{ route('admin.anggota.create') }}" class="btn btn-primary">+ Tambah Anggota</a>

@@ -80,6 +80,7 @@ Route::middleware(['auth', 'role:super_admin,admin,admin_biro'])
             Route::delete('pembina/{pembina}', [PembinaController::class, 'deleteProfile'])->name('pembina.delete-profile');
             Route::resource('kepengurusan', KepengurusanController::class)->except(['show'])->parameters(['kepengurusan' => 'kepengurusan']);
 
+            Route::post('karya/bulk', [KaryaController::class, 'bulk'])->name('karya.bulk');
             Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
             Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
         });

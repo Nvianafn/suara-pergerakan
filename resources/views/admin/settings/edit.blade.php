@@ -30,7 +30,7 @@
     <a href="#settings-appearance">Tampilan &amp; SEO</a>
   </nav>
 
-  <div class="card" id="settings-general">
+  <div class="card" id="settings-general" data-settings-panel="settings-general">
     <h3>Identitas Rayon</h3>
     <p class="sub">Nama dan deskripsi yang tampil di seluruh situs.</p>
     <div class="field">
@@ -50,7 +50,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" data-settings-panel="settings-about">
     <h3 id="settings-about">Halaman Tentang</h3>
     @foreach(['tentang_deskripsi' => 'Deskripsi organisasi', 'tentang_sejarah' => 'Sejarah', 'visi' => 'Visi', 'misi' => 'Misi'] as $key => $label)
     <div class="field">
@@ -61,7 +61,7 @@
     @endforeach
   </div>
 
-  <div class="card">
+  <div class="card" data-settings-panel="settings-contact">
     <h3 id="settings-contact">Kontak</h3>
     <p class="sub">Digunakan di halaman Kontak dan footer.</p>
     <div class="form-grid-2">
@@ -86,7 +86,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" data-settings-panel="settings-contact">
     <h3>Media Sosial</h3>
     <p class="sub">Tautan lengkap (mis. https://instagram.com/...). Kosongkan jika tidak dipakai.</p>
     @foreach(['instagram' => 'Instagram', 'facebook' => 'Facebook', 'youtube' => 'YouTube', 'tiktok' => 'TikTok', 'x' => 'X'] as $network => $label)
@@ -99,14 +99,15 @@
     @endforeach
   </div>
 
-    <div class="card" id="settings-appearance">
+    <div class="card" id="settings-appearance" data-settings-panel="settings-appearance">
       <h3>Tampilan &amp; SEO</h3>
       <p class="sub">JPG, PNG, atau WebP; maksimal 5 MB per file. Gambar diproses ulang menjadi WebP. Kosongkan untuk mempertahankan gambar saat ini.</p>
       @foreach(['logo' => 'Logo', 'favicon' => 'Favicon', 'hero_image' => 'Gambar Hero', 'og_image' => 'Gambar Social Media (OG)'] as $key => $label)
       <div class="field">
         <label for="{{ $key }}">{{ $label }}</label>
         @if($settings[$key])<img src="{{ \App\Models\Setting::imageUrl($key, 'og-image.png') }}" alt="Preview {{ $label }}" style="max-width:100%;max-height:180px;object-fit:contain">@endif
-        <input type="file" id="{{ $key }}" name="{{ $key }}" accept="image/jpeg,image/png,image/webp" class="input">
+        <input type="file" id="{{ $key }}" name="{{ $key }}" accept="image/jpeg,image/png,image/webp" class="input" data-image-preview>
+        <img data-selected-preview hidden alt="Preview pilihan {{ $label }}" style="max-width:100%;max-height:180px;object-fit:contain">
         @error($key)<div class="err">{{ $message }}</div>@enderror
       </div>
       @endforeach

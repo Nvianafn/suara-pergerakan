@@ -52,7 +52,7 @@
       @foreach ($k->foto as $f)
       <div class="foto-item">
         <img src="{{ Str::startsWith($f->path, 'seed/') ? asset('images/hero.png') : \App\Services\PublicMedia::url($f->path) }}" alt="">
-        <span style="flex:1;font-size:13px;color:var(--on-surface-variant)">{{ $f->caption ?? 'Tanpa keterangan' }}</span>
+        <label style="flex:1">Caption <input name="existing_caption[{{ $f->id }}]" maxlength="255" value="{{ old('existing_caption.'.$f->id, $f->caption) }}"></label>
         @if(auth()->user()->isSuperAdmin())<label><input type="checkbox" name="hapus_foto[]" value="{{ $f->id }}"> Hapus permanen</label>@endif
       </div>
       @endforeach

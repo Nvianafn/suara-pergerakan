@@ -11,6 +11,7 @@ use App\Services\ActivityLog;
 use App\Services\MediaCleanup;
 use App\Services\PrivateImageService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -18,16 +19,22 @@ class AnggotaController extends Controller
 {
     public function __construct(private readonly PrivateImageService $image) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
+        $filters = $request->validate(['q' => ['nullable', 'string', 'max:150'], 'angkatan' => ['nullable', 'integer', 'between:1900,2200'], 'status' => ['nullable', 'in:aktif,alumni,non-aktif'], 'prodi' => ['nullable', 'string', 'max:100']]);
+        $query = Anggota::query()
+            ->when($filters['q'] ?? null, fn ($q, $value) => $q->where('nama_lengkap', 'like', '%'.$value.'%'))
+            ->when($filters['angkatan'] ?? null, fn ($q, $value) => $q->where('angkatan', $value))
+            ->when($filters['status'] ?? null, fn ($q, $value) => $q->where('status', $value))
+            ->when($filters['prodi'] ?? null, fn ($q, $value) => $q->where('prodi', $value));
         if (auth()->user()->role === 'admin_biro') {
             return view('admin.anggota.limited', [
-                'anggota' => Anggota::select(['id', 'nama_lengkap', 'angkatan', 'status', 'setuju_publikasi'])->orderBy('nama_lengkap')->paginate(15),
+                'anggota' => $query->select(['id', 'nama_lengkap', 'angkatan', 'status', 'setuju_publikasi'])->orderBy('nama_lengkap')->paginate(15)->withQueryString(),
             ]);
         }
 
         return view('admin.anggota.index', [
-            'anggota' => Anggota::orderBy('nama_lengkap')->paginate(15),
+            'anggota' => $query->orderBy('nama_lengkap')->paginate(15)->withQueryString(),
         ]);
     }
 

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\ImageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class GalleryLimitsTest extends TestCase
@@ -67,12 +68,14 @@ class GalleryLimitsTest extends TestCase
         for ($i = 0; $i < 20; $i++) {
             $photo = $work->foto()->create(['path' => 'galeri/'.$i.'.webp', 'urutan' => $i]);
         }
-        $this->mock(ImageService::class, function ($mock) use ($photo) {
+        Storage::fake('public');
+        Storage::disk('public')->put($photo->path, 'old-photo');
+        $this->mock(ImageService::class, function ($mock) {
             $mock->shouldReceive('store')->once()->andReturn('galeri/new.webp');
-            $mock->shouldReceive('delete')->once()->with($photo->path);
         });
         $this->put(route('admin.kegiatan.update', $work), $this->payload() + ['foto' => [$this->image(5120)], 'caption' => ['Dokumentasi diskusi'], 'hapus_foto' => [$photo->id]])->assertSessionHasNoErrors();
         $this->assertSame(20, $work->foto()->count());
+        Storage::disk('public')->assertMissing($photo->path);
         $this->assertDatabaseHas('kegiatan_foto', ['kegiatan_id' => $work->id, 'path' => 'galeri/new.webp', 'caption' => 'Dokumentasi diskusi']);
     }
 }

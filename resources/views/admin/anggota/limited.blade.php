@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 @section('title', 'Anggota')
 @section('content')
+@include('admin.anggota.filters')
 <h1>Anggota</h1>
 <table class="data-table">
   <thead><tr><th>Nama</th><th>Angkatan</th><th>Status</th></tr></thead>

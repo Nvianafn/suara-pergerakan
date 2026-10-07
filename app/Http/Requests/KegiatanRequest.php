@@ -39,6 +39,8 @@ class KegiatanRequest extends FormRequest
             'foto.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'caption' => ['nullable', 'array'],
             'caption.*' => ['nullable', 'string', 'max:255'],
+            'existing_caption' => ['nullable', 'array'],
+            'existing_caption.*' => ['nullable', 'string', 'max:255'],
             'hapus_foto' => ['nullable', 'array'],
             'hapus_foto.*' => ['integer', 'distinct'],
         ];

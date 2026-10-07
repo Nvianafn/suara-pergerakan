@@ -5,12 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\KaryaRequest;
 use App\Models\Anggota;
+use App\Models\Biro;
 use App\Models\Karya;
+use App\Models\Periode;
 use App\Services\ActivityLog;
 use App\Services\ContentScope;
 use App\Services\FeaturedWorks;
 use App\Services\ImageService;
+use App\Services\MediaCleanup;
+use App\Services\PublicMedia;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
@@ -19,16 +24,49 @@ class KaryaController extends Controller
 {
     public function __construct(private readonly ImageService $image) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
+        $filters = $request->validate(['tipe' => ['nullable', 'in:artikel,esai,puisi,berita'], 'status' => ['nullable', 'in:draft,published'], 'penulis' => ['nullable', 'string', 'max:150'], 'biro_id' => ['nullable', 'integer', 'exists:biro,id']]);
+
         return view('admin.karya.index', [
-            'karya' => Karya::with('anggota')->when(auth()->user()->role === 'admin_biro', fn ($q) => $q->where('biro_id', auth()->user()->biro_id)->where('created_by', auth()->id())->where('status', 'draft'))->latest('created_at')->paginate(12),
+            'biroList' => Biro::orderBy('nama')->get(),
+            'karya' => Karya::with('anggota')->when(auth()->user()->role === 'admin_biro', fn ($q) => $q->where('biro_id', auth()->user()->biro_id)->where('created_by', auth()->id())->where('status', 'draft'))
+                ->when($filters['tipe'] ?? null, fn ($q, $v) => $q->where('tipe', $v))
+                ->when($filters['status'] ?? null, fn ($q, $v) => $q->where('status', $v))
+                ->when($filters['biro_id'] ?? null, fn ($q, $v) => $q->where('biro_id', $v))
+                ->when($filters['penulis'] ?? null, fn ($q, $v) => $q->where(fn ($q) => $q->where('penulis_nama', 'like', '%'.$v.'%')->orWhere('penulis_tipe', $v)->orWhereHas('anggota', fn ($q) => $q->where('nama_lengkap', 'like', '%'.$v.'%'))))
+                ->latest('created_at')->paginate(12)->withQueryString(),
         ]);
     }
 
-    public function create(): View
+    public function bulk(Request $request): RedirectResponse
+    {
+        abort_unless(in_array($request->user()->role, ['admin', 'super_admin'], true), 403);
+        $data = $request->validate(['action' => ['required', 'in:publish,draft,delete'], 'ids' => ['required', 'array', 'min:1', 'max:100'], 'ids.*' => ['required', 'integer', 'distinct', 'exists:karya,id']]);
+        DB::transaction(function () use ($data) {
+            app(FeaturedWorks::class)->validateSelection([]);
+            foreach (Karya::whereIn('id', $data['ids'])->orderBy('id')->lockForUpdate()->get() as $work) {
+                Gate::authorize($data['action'] === 'delete' ? 'delete' : 'update', $work);
+                if ($data['action'] === 'delete') {
+                    $work->delete();
+                } else {
+                    $status = $data['action'] === 'publish' ? 'published' : 'draft';
+                    app(FeaturedWorks::class)->validateSelection(['status' => $status, 'is_featured' => $status === 'published' && $work->is_featured], $work);
+                    $work->update(['status' => $status, 'is_featured' => $status === 'published' && $work->is_featured]);
+                }
+                ActivityLog::record('karya', 'aksi_massal', $work->id, 'Aksi massal: '.$data['action'].'. Media dipertahankan.');
+            }
+        });
+
+        return back()->with('success', 'Aksi massal karya berhasil.');
+    }
+
+    public function create(): View|RedirectResponse
     {
         Gate::authorize('create', Karya::class);
+        if (! Periode::exists()) {
+            return redirect()->route('admin.dashboard')->withErrors(['periode_id' => 'Buat periode terlebih dahulu sebelum menambahkan karya.']);
+        }
 
         return view('admin.karya.create', [
             'anggotaList' => Anggota::orderBy('nama_lengkap')->get(),
@@ -82,7 +120,6 @@ class KaryaController extends Controller
     {
         $data = $this->payload($request, $karya);
 
-        $oldThumbnail = $karya->thumbnail;
         if ($request->hasFile('thumbnail')) {
             $data['thumbnail'] = $this->image->store($request->file('thumbnail'), 'karya', 1400);
         }
@@ -90,6 +127,10 @@ class KaryaController extends Controller
         try {
             DB::transaction(function () use ($karya, $data) {
                 app(FeaturedWorks::class)->validateSelection($data, $karya);
+                $locked = Karya::whereKey($karya->id)->lockForUpdate()->firstOrFail();
+                if (isset($data['thumbnail'])) {
+                    MediaCleanup::enqueue(PublicMedia::disk(), $locked->thumbnail);
+                }
                 $karya->update($data);
                 ActivityLog::record('karya', 'perubahan', $karya->id, 'Karya diperbarui; status '.$karya->status.'.');
             });
@@ -97,9 +138,7 @@ class KaryaController extends Controller
             $this->image->delete($data['thumbnail'] ?? null);
             throw $exception;
         }
-        if (isset($data['thumbnail']) && $oldThumbnail) {
-            $this->image->delete($oldThumbnail);
-        }
+        MediaCleanup::run();
 
         return redirect()->route('admin.karya.index')
             ->with('success', 'Karya "'.$karya->judul.'" berhasil diperbarui.');

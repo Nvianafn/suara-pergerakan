@@ -1,5 +1,59 @@
 import './bootstrap';
 
+document.querySelectorAll('[data-image-preview]').forEach((input) => {
+    const image = input.parentElement.querySelector('[data-selected-preview]');
+    let url;
+    input.addEventListener('change', () => {
+        if (url) URL.revokeObjectURL(url);
+        const file = input.files[0];
+        image.hidden = !file;
+        if (file) {
+            url = URL.createObjectURL(file);
+            image.src = url;
+        } else image.removeAttribute('src');
+    });
+    window.addEventListener('pagehide', () => { if (url) URL.revokeObjectURL(url); });
+});
+
+const settingsTabs = document.querySelector('.settings-tabs');
+if (settingsTabs) {
+    const links = Array.from(settingsTabs.querySelectorAll('a'));
+    const panels = Array.from(document.querySelectorAll('[data-settings-panel]'));
+    settingsTabs.setAttribute('role', 'tablist');
+    const activate = (id) => {
+        panels.forEach((panel) => { panel.hidden = panel.dataset.settingsPanel !== id; });
+        links.forEach((link) => {
+            const active = link.hash === `#${id}`;
+            link.setAttribute('aria-selected', String(active));
+            link.tabIndex = active ? 0 : -1;
+            link.style.fontWeight = active ? '700' : '400';
+        });
+    };
+    links.forEach((link, index) => {
+        link.setAttribute('role', 'tab');
+        link.id = `tab-${link.hash.slice(1)}`;
+        link.addEventListener('click', (event) => { event.preventDefault(); activate(link.hash.slice(1)); });
+        link.addEventListener('keydown', (event) => {
+            let target;
+            if (event.key === 'ArrowRight') target = (index + 1) % links.length;
+            if (event.key === 'ArrowLeft') target = (index + links.length - 1) % links.length;
+            if (event.key === 'Home') target = 0;
+            if (event.key === 'End') target = links.length - 1;
+            if (target !== undefined) { event.preventDefault(); links[target].click(); links[target].focus(); }
+        });
+    });
+    panels.forEach((panel) => {
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', `tab-${panel.dataset.settingsPanel}`);
+    });
+    const errorPanel = document.querySelector('.settings-wrap .err')?.closest('[data-settings-panel]');
+    activate(errorPanel?.dataset.settingsPanel || 'settings-general');
+    document.querySelector('.settings-wrap').addEventListener('invalid', (event) => {
+        const panel = event.target.closest('[data-settings-panel]');
+        if (panel) activate(panel.dataset.settingsPanel);
+    }, true);
+}
+
 document.querySelectorAll('[data-gallery-upload]').forEach((input) => {
     const captions = input.parentElement.querySelector('[data-gallery-captions]');
     let previews = [];

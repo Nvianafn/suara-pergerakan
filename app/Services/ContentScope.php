@@ -11,6 +11,9 @@ class ContentScope
 {
     public static function payload(Request $request, array $data, ?Model $existing = null): array
     {
+        if (! $existing && ! Periode::exists()) {
+            throw ValidationException::withMessages(['periode_id' => 'Buat periode terlebih dahulu.']);
+        }
         if ($request->user()->role === 'admin_biro') {
             $data['biro_id'] = $request->user()->biro_id;
             $data['periode_id'] = $existing ? $existing->periode_id : Periode::aktif()->value('id');

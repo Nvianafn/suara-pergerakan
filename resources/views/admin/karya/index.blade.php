@@ -30,6 +30,19 @@
   <a href="{{ route('admin.karya.create') }}" class="btn btn-primary">+ Tambah Karya</a>
 </div>
 
+<form method="GET" style="display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem">
+  <label>Tipe <select name="tipe"><option value="">Semua</option>@foreach(['artikel','esai','puisi','berita'] as $type)<option @selected(request('tipe') === $type)>{{ $type }}</option>@endforeach</select></label>
+  <label>Status <select name="status"><option value="">Semua</option>@foreach(['draft','published'] as $status)<option @selected(request('status') === $status)>{{ $status }}</option>@endforeach</select></label>
+  <label>Penulis <input name="penulis" value="{{ request('penulis') }}"></label>
+  @if(auth()->user()->role !== 'admin_biro')<label>Biro <select name="biro_id"><option value="">Semua</option>@foreach($biroList as $biro)<option value="{{ $biro->id }}" @selected(request('biro_id') == $biro->id)>{{ $biro->nama }}</option>@endforeach</select></label>@endif
+  <button class="btn btn-primary">Filter</button><a href="{{ route('admin.karya.index') }}">Reset</a>
+</form>
+@if(auth()->user()->role !== 'admin_biro')
+<form id="bulk-karya" method="POST" action="{{ route('admin.karya.bulk') }}" onsubmit="return confirm('Terapkan aksi pada karya yang dipilih?')">@csrf
+  <select name="action"><option value="publish">Publish</option><option value="draft">Jadikan draft</option><option value="delete">Pindahkan ke sampah</option></select>
+  <button class="btn btn-primary">Terapkan pilihan</button>
+</form>
+@endif
 <table class="data-table">
   <thead>
     <tr><th>Judul</th><th>Penulis</th><th>Tipe</th><th>Status</th><th>Publikasi</th><th style="text-align:right">Aksi</th></tr>
@@ -37,7 +50,7 @@
   <tbody>
     @forelse ($karya as $ky)
     <tr>
-      <td><b style="font-weight:600">{{ Str::limit($ky->judul, 46) }}</b></td>
+      <td>@if(auth()->user()->role !== 'admin_biro')<input type="checkbox" name="ids[]" value="{{ $ky->id }}" form="bulk-karya" aria-label="Pilih {{ $ky->judul }}">@endif <b style="font-weight:600">{{ Str::limit($ky->judul, 46) }}</b></td>
       <td>{{ $ky->penulis() }}</td>
       <td><span class="tag-tipe">{{ ucfirst($ky->tipe) }}</span></td>
       <td><span class="pill @if($ky->status === 'published') pill-pub @else pill-draft @endif">{{ ucfirst($ky->status) }}</span></td>

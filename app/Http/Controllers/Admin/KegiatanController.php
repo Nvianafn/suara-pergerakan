@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\KegiatanRequest;
 use App\Models\Biro;
 use App\Models\Kegiatan;
+use App\Models\Periode;
 use App\Services\ActivityLog;
 use App\Services\ContentScope;
 use App\Services\GalleryLimits;
 use App\Services\ImageService;
+use App\Services\MediaCleanup;
+use App\Services\PublicMedia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -26,8 +29,11 @@ class KegiatanController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
+        if (! Periode::exists()) {
+            return redirect()->route('admin.dashboard')->withErrors(['periode_id' => 'Buat periode terlebih dahulu sebelum menambahkan kegiatan.']);
+        }
         Gate::authorize('create', Kegiatan::class);
 
         return view('admin.kegiatan.create', [
@@ -38,7 +44,7 @@ class KegiatanController extends Controller
     public function store(KegiatanRequest $request): RedirectResponse
     {
         $data = collect($request->validated())
-            ->except(['thumbnail', 'foto', 'caption', 'hapus_foto'])
+            ->except(['thumbnail', 'foto', 'caption', 'existing_caption', 'hapus_foto'])
             ->toArray();
         $data = ContentScope::payload($request, $data);
         $data['created_by'] = $request->user()->id;
@@ -91,21 +97,25 @@ class KegiatanController extends Controller
             ->toArray();
         $data = ContentScope::payload($request, $data, $kegiatan);
 
-        $oldThumbnail = $kegiatan->thumbnail;
         if ($request->hasFile('thumbnail')) {
             $data['thumbnail'] = $this->image->store($request->file('thumbnail'), 'kegiatan', 1600);
         }
 
         $uploads = isset($data['thumbnail']) ? [$data['thumbnail']] : [];
-        $removed = [];
         try {
-            DB::transaction(function () use ($kegiatan, $data, $request, &$uploads, &$removed) {
+            DB::transaction(function () use ($kegiatan, $data, $request, &$uploads) {
                 // Serialize gallery changes on the parent row before rechecking capacity.
-                Kegiatan::whereKey($kegiatan->id)->lockForUpdate()->firstOrFail();
+                $locked = Kegiatan::whereKey($kegiatan->id)->lockForUpdate()->firstOrFail();
+                if (isset($data['thumbnail'])) {
+                    MediaCleanup::enqueue(PublicMedia::disk(), $locked->thumbnail);
+                }
                 app(GalleryLimits::class)->validate($kegiatan, count($request->file('foto', [])), $request->input('hapus_foto', []));
                 $kegiatan->update($data);
+                foreach ($request->input('existing_caption', []) as $id => $caption) {
+                    $kegiatan->foto()->whereKey($id)->update(['caption' => $caption]);
+                }
                 foreach ($kegiatan->foto()->whereIn('id', $request->input('hapus_foto', []))->get() as $foto) {
-                    $removed[] = $foto->path;
+                    MediaCleanup::enqueue(PublicMedia::disk(), $foto->path);
                     ActivityLog::record('kegiatan_foto', 'penghapusan', $foto->id, 'Foto galeri dihapus permanen oleh super_admin.');
                     $foto->delete();
                 }
@@ -118,12 +128,7 @@ class KegiatanController extends Controller
             }
             throw $exception;
         }
-        if (isset($data['thumbnail']) && $oldThumbnail) {
-            $removed[] = $oldThumbnail;
-        }
-        foreach ($removed as $path) {
-            $this->image->delete($path);
-        }
+        MediaCleanup::run();
 
         return redirect()->route('admin.kegiatan.index')
             ->with('success', 'Kegiatan "'.$kegiatan->judul.'" berhasil diperbarui.');

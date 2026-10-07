@@ -3,6 +3,10 @@
 @section('title', 'Dashboard')
 
 @push('styles')
+<style>.setup-guide{padding:1rem;margin-bottom:1rem;border:1px solid var(--outline-variant);border-radius:1rem}.setup-guide a{margin-right:1rem}</style>
+@endpush
+
+@push('styles')
 <style>
 .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2rem}
 .stat-card{padding:1.5rem;border-radius:1rem;background:#fff;border:1px solid var(--outline-variant);display:flex;align-items:center;gap:1rem}
@@ -24,6 +28,13 @@
 @endpush
 
 @section('content')
+@if(auth()->user()->role !== 'admin_biro' && (!\App\Models\Periode::exists() || !\App\Models\Biro::exists() || !\App\Models\Setting::get('nama_rayon')))
+<section class="setup-guide">
+  <h2>Mulai dari sini</h2>
+  <p>Lengkapi settings, biro, periode, anggota, dan pengurus; lalu aktifkan periode. Buat super admin cadangan dan lakukan backup pertama beserta uji pemulihan.</p>
+  <a href="{{ route('admin.settings.edit') }}">Settings</a><a href="{{ route('admin.biro.index') }}">Biro</a><a href="{{ route('admin.periode.index') }}">Periode &amp; Pengurus</a><a href="{{ route('admin.anggota.index') }}">Anggota</a>
+</section>
+@endif
 <div class="stat-cards">
   <div class="stat-card"><span class="ic">&#128100;</span><span><b>{{ $stats['anggota'] }}</b><small>Anggota</small></span></div>
   <div class="stat-card"><span class="ic">&#127970;</span><span><b>{{ $stats['biro'] }}</b><small>Biro</small></span></div>
