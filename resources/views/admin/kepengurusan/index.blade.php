@@ -33,7 +33,10 @@
       @endforeach
     </select>
   </form>
-  <a href="{{ route('admin.kepengurusan.create') }}" class="btn btn-primary">+ Tambah Pengurus</a>
+  <div class="row-actions">
+    <a href="{{ route('admin.pembina.create', array_filter(['periode' => $selectedId])) }}" class="btn btn-primary">+ Tambah Pembina</a>
+    <a href="{{ route('admin.kepengurusan.create') }}" class="btn-sm">+ Tambah Pengurus</a>
+  </div>
 </div>
 
 @if ($dataIssues > 0)

@@ -17,7 +17,8 @@ class PembinaProfileTest extends TestCase
     public function test_profile_can_be_managed_before_first_period_without_creating_member_or_account(): void
     {
         $user = User::create(['name' => 'Admin', 'email' => 'admin@example.test', 'password' => 'password', 'role' => 'super_admin']);
-        $this->actingAs($user)->get(route('admin.kepengurusan.index'))->assertOk()->assertSee('Tambah Profil Pembina');
+        $this->actingAs($user)->get(route('admin.kepengurusan.index'))->assertOk()->assertSee('Tambah Pembina');
+        $this->get(route('admin.pembina.create'))->assertOk()->assertSee('Tidak perlu terdaftar sebagai anggota');
         $this->post(route('admin.pembina.create-profile'), ['nama_lengkap' => 'Pembina Eksternal'])->assertSessionHasNoErrors();
         $profil = Pembina::firstOrFail();
         $this->assertDatabaseCount('periode', 0);
@@ -73,8 +74,25 @@ class PembinaProfileTest extends TestCase
         $user = User::first();
         $user->update(['role' => 'admin_biro', 'biro_id' => Biro::first()->id]);
         $profil = Pembina::create(['nama_lengkap' => 'Pembina']);
+        $this->actingAs($user)->get(route('admin.pembina.create'))->assertForbidden();
         $this->actingAs($user)->post(route('admin.pembina.create-profile'), ['nama_lengkap' => 'Dilarang'])->assertForbidden();
         $this->put(route('admin.pembina.update-profile', $profil), ['nama_lengkap' => 'Dilarang'])->assertForbidden();
         $this->assertSame('Pembina', $profil->fresh()->nama_lengkap);
+    }
+
+    public function test_new_external_profile_can_be_placed_in_one_submission(): void
+    {
+        $this->seed();
+        $periode = Periode::first();
+        $members = Anggota::count();
+        $users = User::count();
+        $this->actingAs(User::first())->post(route('admin.pembina.create-profile'), [
+            'nama_lengkap' => 'Pembina Dari Luar', 'periode_id' => $periode->id, 'urutan' => 2,
+        ])->assertSessionHasNoErrors()->assertRedirect(route('admin.kepengurusan.index', ['periode' => $periode->id]));
+        $profil = Pembina::where('nama_lengkap', 'Pembina Dari Luar')->firstOrFail();
+        $this->assertNull($profil->anggota_id);
+        $this->assertSame($members, Anggota::count());
+        $this->assertSame($users, User::count());
+        $this->assertDatabaseHas('periode_pembina', ['periode_id' => $periode->id, 'pembina_id' => $profil->id, 'urutan' => 2]);
     }
 }

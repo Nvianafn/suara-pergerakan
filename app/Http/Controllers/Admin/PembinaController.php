@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Anggota;
 use App\Models\Pembina;
 use App\Models\Periode;
 use App\Services\ActivityLog;
@@ -15,6 +16,15 @@ use Illuminate\Validation\Rule;
 
 class PembinaController extends Controller
 {
+    public function create(Request $request)
+    {
+        return view('admin.kepengurusan.create-pembina', [
+            'periodeList' => Periode::orderByDesc('id')->get(),
+            'selectedId' => $request->query('periode'),
+            'anggotaList' => Anggota::orderBy('nama_lengkap')->get(),
+        ]);
+    }
+
     private function profileRules(?Pembina $pembina = null): array
     {
         return [
@@ -29,17 +39,25 @@ class PembinaController extends Controller
 
     public function createProfile(Request $request)
     {
-        $data = $request->validate($this->profileRules());
+        $data = $request->validate($this->profileRules() + [
+            'periode_id' => ['nullable', 'exists:periode,id'],
+            'urutan' => ['nullable', 'integer', 'between:0,255'],
+        ]);
         $newPhoto = null;
         try {
             DB::transaction(function () use ($data, $request, &$newPhoto) {
-                $pembina = Pembina::create(collect($data)->except(['foto', 'hapus_foto', 'setuju_publikasi'])->all() + ['setuju_publikasi' => $request->boolean('setuju_publikasi')]);
+                $pembina = Pembina::create(collect($data)->except(['foto', 'hapus_foto', 'setuju_publikasi', 'periode_id', 'urutan'])->all() + ['setuju_publikasi' => $request->boolean('setuju_publikasi')]);
                 if ($request->hasFile('foto')) {
                     $newPhoto = app(PrivateImageService::class)->store($request->file('foto'), 'pembina/'.$pembina->id);
                     $pembina->foto = $newPhoto;
                     $pembina->save();
                 }
-                ActivityLog::pembina('pembuatan', $pembina->id, 'Profil Pembina dibuat tanpa penempatan.');
+                ActivityLog::pembina('pembuatan', $pembina->id, 'Profil Pembina dibuat.');
+                if (! empty($data['periode_id'])) {
+                    $periode = Periode::findOrFail($data['periode_id']);
+                    $periode->pembina()->attach($pembina->id, ['urutan' => $data['urutan'] ?? 0]);
+                    ActivityLog::pembina('penempatan', $pembina->id, 'Penempatan Pembina pada periode '.$periode->id);
+                }
             });
         } catch (\Throwable $exception) {
             if ($newPhoto) {
@@ -48,7 +66,8 @@ class PembinaController extends Controller
             throw $exception;
         }
 
-        return back()->with('success', 'Profil Pembina dibuat. Pilih periode untuk menempatkannya.');
+        return redirect()->route('admin.kepengurusan.index', array_filter(['periode' => $data['periode_id'] ?? null]))
+            ->with('success', empty($data['periode_id']) ? 'Profil Pembina dibuat. Bisa ditempatkan pada periode nanti.' : 'Pembina berhasil ditambahkan ke periode.');
     }
 
     public function updateProfile(Request $request, Pembina $pembina)

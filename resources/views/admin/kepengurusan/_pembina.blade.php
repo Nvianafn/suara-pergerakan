@@ -1,9 +1,11 @@
 <section style="margin:1.5rem 0">
   <h2>Pembina</h2>
-  <p>Semua berlabel Pembina. Perubahan profil berlaku pada seluruh periode yang memakai profil ini.</p>
+   <p>Profil mandiri, tidak wajib menjadi anggota. Perubahan profil berlaku pada seluruh periode yang memakai profil ini.</p>
   @if($errors->any())<ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>@endif
   @if($selectedPeriode)
     @foreach($selectedPeriode->pembina()->orderBy('periode_pembina.urutan')->orderBy('periode_pembina.id')->get() as $profil)
+    <details class="card" style="padding:1rem;margin:1rem 0">
+    <summary><b>{{ $profil->nama_lengkap }}</b> · Urutan {{ $profil->pivot->urutan }} · Edit Pembina</summary>
     <form method="POST" enctype="multipart/form-data" action="{{ route('admin.pembina.update', [$selectedPeriode, $profil]) }}" style="margin:1rem 0">
       @csrf @method('PUT')
       @include('admin.kepengurusan._pembina-profile-fields', ['profil' => $profil])
@@ -13,24 +15,21 @@
     <form method="POST" action="{{ route('admin.pembina.destroy', [$selectedPeriode, $profil]) }}">
       @csrf @method('DELETE')<button class="btn-sm danger">Lepaskan dari periode</button>
     </form>
+    </details>
     @endforeach
-    <h3>Tempatkan profil pada {{ $selectedPeriode->nama }}</h3>
+    @if($selectedPeriode->pembina->isEmpty())<p style="margin:1rem 0">Belum ada Pembina pada periode ini. Klik <b>Tambah Pembina</b> untuk menambahkan.</p>@endif
+    <details class="card" style="padding:1rem;margin:1rem 0"><summary>Gunakan profil Pembina yang sudah ada pada {{ $selectedPeriode->nama }}</summary>
     <form method="POST" action="{{ route('admin.pembina.store', $selectedPeriode) }}">
       @csrf
       <label>Profil <select name="pembina_id" required><option value="">Pilih profil</option>@foreach($pembinaList as $profil)<option value="{{ $profil->id }}">{{ $profil->nama_lengkap }}</option>@endforeach</select></label>
       <label>Urutan <input type="number" name="urutan" value="0" min="0" max="255" required></label>
       <button class="btn btn-primary">Tempatkan Pembina</button>
     </form>
+    </details>
   @else
     <p>Profil boleh dibuat sekarang. Buat periode terlebih dahulu untuk menempatkan Pembina.</p>
   @endif
-  <h3>Tambah Profil Pembina</h3>
-  <form method="POST" enctype="multipart/form-data" action="{{ route('admin.pembina.create-profile') }}">
-    @csrf
-    @include('admin.kepengurusan._pembina-profile-fields', ['profil' => null])
-    <button class="btn btn-primary">Tambah Profil Pembina</button>
-  </form>
-  <h3>Profil tersedia</h3>
+  <details style="margin:1rem 0"><summary>Kelola semua profil Pembina ({{ $pembinaList->count() }})</summary>
   @foreach($pembinaList as $profil)
     <details style="margin:1rem 0">
       <summary>{{ $profil->nama_lengkap }} — {{ $profil->periode_count }} periode</summary>
@@ -46,4 +45,5 @@
       @endif
     </details>
   @endforeach
+  </details>
 </section>
