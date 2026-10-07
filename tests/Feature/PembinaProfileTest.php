@@ -75,6 +75,7 @@ class PembinaProfileTest extends TestCase
         $user->update(['role' => 'admin_biro', 'biro_id' => Biro::first()->id]);
         $profil = Pembina::create(['nama_lengkap' => 'Pembina']);
         $this->actingAs($user)->get(route('admin.pembina.create'))->assertForbidden();
+        $this->get(route('admin.pembina.edit', $profil))->assertForbidden();
         $this->actingAs($user)->post(route('admin.pembina.create-profile'), ['nama_lengkap' => 'Dilarang'])->assertForbidden();
         $this->put(route('admin.pembina.update-profile', $profil), ['nama_lengkap' => 'Dilarang'])->assertForbidden();
         $this->assertSame('Pembina', $profil->fresh()->nama_lengkap);
@@ -94,5 +95,13 @@ class PembinaProfileTest extends TestCase
         $this->assertSame($members, Anggota::count());
         $this->assertSame($users, User::count());
         $this->assertDatabaseHas('periode_pembina', ['periode_id' => $periode->id, 'pembina_id' => $profil->id, 'urutan' => 2]);
+        $this->get(route('admin.pembina.edit', ['pembina' => $profil, 'periode' => $periode->id]))->assertOk()->assertViewHas('urutan', 2);
+        $this->put(route('admin.pembina.update', [$periode, $profil]), [
+            'nama_lengkap' => 'Nama Setelah Edit', 'urutan' => 4,
+        ])->assertRedirect(route('admin.kepengurusan.index', ['periode' => $periode->id]));
+        $this->assertSame('Nama Setelah Edit', $profil->fresh()->nama_lengkap);
+        $this->assertDatabaseHas('periode_pembina', ['periode_id' => $periode->id, 'pembina_id' => $profil->id, 'urutan' => 4]);
+        $other = Periode::where('id', '!=', $periode->id)->firstOrFail();
+        $this->get(route('admin.pembina.edit', ['pembina' => $profil, 'periode' => $other->id]))->assertNotFound();
     }
 }

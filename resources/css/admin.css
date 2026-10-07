@@ -32,6 +32,9 @@
 .admin-body .admin-content .data-table { display: block; width: 100%; max-width: 100%; overflow-x: auto; border: 1px solid #e2e7ef; border-radius: 12px; background: white; }
 .admin-body .data-table th { padding: 14px 16px; background: #f8fafc; color: #64748b; white-space: nowrap; }
 .admin-body .data-table { border-collapse: collapse; margin-bottom: 20px; text-align: left; }
+.admin-body .data-table thead, .admin-body .data-table tbody { display: table; width: 100%; table-layout: fixed; }
+.admin-body .admin-content section { padding-block: 0; }
+.admin-body .data-table td { overflow-wrap: anywhere; }
 .admin-body .data-table th, .admin-body .data-table td { border-bottom: 1px solid #e2e7ef; }
 .admin-body .admin-content > h2 { margin: 24px 0 12px; font-size: 18px; }
 .admin-body .admin-content > p { margin-bottom: 20px; color: #64748b; }
@@ -70,5 +73,6 @@
     .admin-body .settings-tabs a { flex-basis: 40%; }
     .admin-body .form-actions { flex-wrap: wrap; }
     .admin-body .data-table td { min-width: 110px; }
+    .admin-body .data-table thead, .admin-body .data-table tbody { min-width: 640px; }
     .admin-body .admin-content form[method=GET] > label { flex-basis: 100%; }
 }

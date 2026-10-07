@@ -74,6 +74,7 @@ Route::middleware(['auth', 'role:super_admin,admin,admin_biro'])
             Route::post('periode/{periode}/pembina', [PembinaController::class, 'store'])->name('pembina.store');
             Route::get('periode/{periode}/pengurus', [KepengurusanController::class, 'periodIndex'])->name('periode.pengurus');
             Route::get('pembina/create', [PembinaController::class, 'create'])->name('pembina.create');
+            Route::get('pembina/{pembina}/edit', [PembinaController::class, 'edit'])->name('pembina.edit');
             Route::post('pembina', [PembinaController::class, 'createProfile'])->name('pembina.create-profile');
             Route::put('pembina/{pembina}', [PembinaController::class, 'updateProfile'])->name('pembina.update-profile');
             Route::put('periode/{periode}/pembina/{pembina}', [PembinaController::class, 'update'])->name('pembina.update');

@@ -37,6 +37,20 @@ class PembinaController extends Controller
         ];
     }
 
+    public function edit(Request $request, Pembina $pembina)
+    {
+        $periode = $request->filled('periode') ? Periode::findOrFail($request->query('periode')) : null;
+        $placement = $periode ? $periode->pembina()->where('pembina.id', $pembina->id)->first() : null;
+        abort_if($periode && ! $placement, 404);
+
+        return view('admin.kepengurusan.edit-pembina', [
+            'profil' => $pembina,
+            'periode' => $periode,
+            'urutan' => $placement?->pivot->urutan,
+            'anggotaList' => Anggota::orderBy('nama_lengkap')->get(),
+        ]);
+    }
+
     public function createProfile(Request $request)
     {
         $data = $request->validate($this->profileRules() + [
@@ -75,7 +89,7 @@ class PembinaController extends Controller
         $data = $request->validate($this->profileRules($pembina));
         $this->saveProfile($request, $pembina, $data);
 
-        return back()->with('success', 'Profil Pembina diperbarui untuk seluruh periode terkait.');
+        return redirect()->route('admin.kepengurusan.index')->with('success', 'Profil Pembina diperbarui untuk seluruh periode terkait.');
     }
 
     public function store(Request $request, Periode $periode)
@@ -112,7 +126,7 @@ class PembinaController extends Controller
         ]);
         $this->saveProfile($request, $pembina, $data, $periode);
 
-        return back()->with('success', 'Profil dan urutan Pembina diperbarui.');
+        return redirect()->route('admin.kepengurusan.index', ['periode' => $periode->id])->with('success', 'Profil dan urutan Pembina diperbarui.');
     }
 
     private function saveProfile(Request $request, Pembina $pembina, array $data, ?Periode $periode = null): void
