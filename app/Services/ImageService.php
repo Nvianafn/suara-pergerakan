@@ -12,7 +12,7 @@ class ImageService
 {
     /**
      * Resize (scale down only), convert to WebP, and store on the public disk.
-     * Returns the path relative to the public disk (use asset('storage/'.$path)).
+     * Returns an object key on the configured public media disk.
      */
     public function store(UploadedFile $file, string $dir, int $maxWidth = 1600): string
     {
@@ -24,15 +24,16 @@ class ImageService
         }
 
         $path = trim($dir, '/').'/'.Str::random(24).'.webp';
-        Storage::disk('public')->put($path, (string) $image->toWebp(82));
+        Storage::disk(PublicMedia::disk())->put($path, (string) $image->toWebp(82));
 
         return $path;
     }
 
     public function delete(?string $path): void
     {
-        if ($path && Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
+        if ($path) {
+            MediaCleanup::enqueue(PublicMedia::disk(), $path);
+            MediaCleanup::run();
         }
     }
 }

@@ -41,7 +41,7 @@
     <tr>
       <td>
         <div class="cell-title">
-          <img class="thumb-sm" src="{{ $k->thumbnail ? asset('storage/'.$k->thumbnail) : asset('images/hero.png') }}" alt="">
+          <img class="thumb-sm" src="{{ $k->thumbnail ? \App\Services\PublicMedia::url($k->thumbnail) : asset('images/hero.png') }}" alt="">
           <b>{{ Str::limit($k->judul, 48) }}</b>
         </div>
       </td>

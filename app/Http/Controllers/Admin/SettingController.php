@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Services\ActivityLog;
 use App\Services\ImageService;
 use App\Services\MediaCleanup;
+use App\Services\PublicMedia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -79,7 +80,7 @@ class SettingController extends Controller
                 foreach ($uploads as $key => $path) {
                     $old = Setting::where('key', $key)->lockForUpdate()->value('value');
                     if ($old && $old !== $path) {
-                        MediaCleanup::enqueue('public', $old);
+                        MediaCleanup::enqueue(PublicMedia::disk(), $old);
                     }
                 }
                 foreach ($validated as $key => $value) {
@@ -89,7 +90,7 @@ class SettingController extends Controller
             });
         } catch (\Throwable $exception) {
             foreach ($uploads as $path) {
-                MediaCleanup::enqueue('public', $path);
+                MediaCleanup::enqueue(PublicMedia::disk(), $path);
             }
             MediaCleanup::run();
             throw $exception;

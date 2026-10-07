@@ -46,7 +46,7 @@
           @foreach ($kegiatan as $k)
           <a href="{{ route('kegiatan.show', $k) }}" class="keg-card">
             <div class="keg-thumb">
-              <img src="{{ $k->thumbnail ? asset('storage/'.$k->thumbnail) : asset('images/hero.png') }}" alt="{{ $k->judul }}">
+              <img src="{{ $k->thumbnail ? \App\Services\PublicMedia::url($k->thumbnail) : asset('images/hero.png') }}" alt="{{ $k->judul }}">
               @if ($k->biro_label)<span class="tag">{{ Str::of($k->biro_label)->replace('Biro ', '') }}</span>@endif
             </div>
             <div class="keg-body">

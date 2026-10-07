@@ -40,7 +40,7 @@
 <section>
   <div class="wrap">
     <div class="keg-cover">
-      <img src="{{ $kegiatan->thumbnail ? asset('storage/'.$kegiatan->thumbnail) : asset('images/hero.png') }}" alt="{{ $kegiatan->judul }}">
+      <img src="{{ $kegiatan->thumbnail ? \App\Services\PublicMedia::url($kegiatan->thumbnail) : asset('images/hero.png') }}" alt="{{ $kegiatan->judul }}">
     </div>
     <div class="keg-layout">
       <div class="keg-article reveal">
@@ -50,7 +50,7 @@
         <h3 style="margin-top:1rem">Dokumentasi</h3>
         <div class="gallery">
           @foreach ($kegiatan->foto as $f)
-          <img src="{{ Str::startsWith($f->path, 'seed/') ? asset('images/hero.png') : asset('storage/'.$f->path) }}" alt="{{ $f->caption ?? $kegiatan->judul }}">
+          <img src="{{ Str::startsWith($f->path, 'seed/') ? asset('images/hero.png') : \App\Services\PublicMedia::url($f->path) }}" alt="{{ $f->caption ?? $kegiatan->judul }}">
           @endforeach
         </div>
         @endif

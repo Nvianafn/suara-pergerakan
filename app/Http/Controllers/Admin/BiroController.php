@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\ActivityLog;
 use App\Services\ImageService;
 use App\Services\MediaCleanup;
+use App\Services\PublicMedia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -95,7 +96,7 @@ class BiroController extends Controller
             DB::transaction(function () use ($biro, $data, $oldLogo) {
                 $biro->update($data);
                 if (isset($data['logo'])) {
-                    MediaCleanup::enqueue('public', $oldLogo);
+                    MediaCleanup::enqueue(PublicMedia::disk(), $oldLogo);
                 }
                 ActivityLog::record('biro', 'perubahan', $biro->id, 'Biro diperbarui; status '.($biro->is_aktif ? 'aktif' : 'nonaktif').'.');
             });
@@ -124,7 +125,7 @@ class BiroController extends Controller
         }
 
         DB::transaction(function () use ($biro) {
-            MediaCleanup::enqueue('public', $biro->logo);
+            MediaCleanup::enqueue(PublicMedia::disk(), $biro->logo);
             $biro->delete();
             ActivityLog::record('biro', 'penghapusan', $biro->id, 'Biro tanpa relasi dihapus.');
         });

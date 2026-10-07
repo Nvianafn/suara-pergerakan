@@ -51,7 +51,7 @@
       <label>Foto Tersimpan</label>
       @foreach ($k->foto as $f)
       <div class="foto-item">
-        <img src="{{ Str::startsWith($f->path, 'seed/') ? asset('images/hero.png') : asset('storage/'.$f->path) }}" alt="">
+        <img src="{{ Str::startsWith($f->path, 'seed/') ? asset('images/hero.png') : \App\Services\PublicMedia::url($f->path) }}" alt="">
         <span style="flex:1;font-size:13px;color:var(--on-surface-variant)">{{ $f->caption ?? 'Tanpa keterangan' }}</span>
         @if(auth()->user()->isSuperAdmin())<label><input type="checkbox" name="hapus_foto[]" value="{{ $f->id }}"> Hapus permanen</label>@endif
       </div>
@@ -90,7 +90,7 @@
     </div>
     <div class="field">
       <label>Thumbnail</label>
-      @if ($k && $k->thumbnail)<img class="img-preview" src="{{ asset('storage/'.$k->thumbnail) }}" alt="">@endif
+      @if ($k && $k->thumbnail)<img class="img-preview" src="{{ \App\Services\PublicMedia::url($k->thumbnail) }}" alt="">@endif
       <input type="file" name="thumbnail" accept="image/*" class="input">
       @error('thumbnail')<div class="err">{{ $message }}</div>@enderror
     </div>

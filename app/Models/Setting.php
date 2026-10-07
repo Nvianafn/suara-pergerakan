@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Services\HtmlSanitizer;
+use App\Services\PublicMedia;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 
 class Setting extends Model
 {
@@ -36,7 +36,7 @@ class Setting extends Model
     {
         $path = static::get($key);
 
-        return $path ? Storage::disk('public')->url($path) : asset($fallback);
+        return $path ? PublicMedia::url($path) : asset($fallback);
     }
 
     protected static function booted(): void

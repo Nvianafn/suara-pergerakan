@@ -7,6 +7,7 @@ use App\Models\Karya;
 use App\Models\Kegiatan;
 use App\Services\ActivityLog;
 use App\Services\MediaCleanup;
+use App\Services\PublicMedia;
 use Illuminate\Support\Facades\DB;
 
 class TrashController extends Controller
@@ -42,10 +43,10 @@ class TrashController extends Controller
     {
         DB::transaction(function () use ($type, $id) {
             $content = $this->model($type, $id);
-            MediaCleanup::enqueue('public', $content->thumbnail);
+            MediaCleanup::enqueue(PublicMedia::disk(), $content->thumbnail);
             if ($content instanceof Kegiatan) {
                 foreach ($content->foto as $foto) {
-                    MediaCleanup::enqueue('public', $foto->path);
+                    MediaCleanup::enqueue(PublicMedia::disk(), $foto->path);
                     $foto->delete();
                 }
             }

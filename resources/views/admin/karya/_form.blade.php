@@ -103,7 +103,7 @@
     </div>
     <div class="field">
       <label>Thumbnail</label>
-      @if ($ky && $ky->thumbnail)<img class="img-preview" src="{{ asset('storage/'.$ky->thumbnail) }}" alt="">@endif
+      @if ($ky && $ky->thumbnail)<img class="img-preview" src="{{ \App\Services\PublicMedia::url($ky->thumbnail) }}" alt="">@endif
       <input type="file" name="thumbnail" accept="image/*" class="input">
       @error('thumbnail')<div class="err">{{ $message }}</div>@enderror
     </div>

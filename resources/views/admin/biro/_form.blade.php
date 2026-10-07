@@ -52,7 +52,7 @@
     </div>
     <div class="field">
       <label>Logo (opsional)</label>
-      @if ($b && $b->logo)<img class="logo-preview" src="{{ asset('storage/'.$b->logo) }}" alt="">@endif
+      @if ($b && $b->logo)<img class="logo-preview" src="{{ \App\Services\PublicMedia::url($b->logo) }}" alt="">@endif
       <input type="file" name="logo" accept="image/*" class="input">
       @error('logo')<div class="err">{{ $message }}</div>@enderror
     </div>
