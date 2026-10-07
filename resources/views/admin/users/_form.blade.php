@@ -84,3 +84,4 @@
     </div>
   </aside>
 </div>
+<p>Password yang ditetapkan admin bersifat sementara; pengguna wajib menggantinya saat login berikutnya.</p>

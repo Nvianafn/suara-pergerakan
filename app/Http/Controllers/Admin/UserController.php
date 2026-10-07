@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\ActivityLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -33,6 +34,7 @@ class UserController extends Controller
     {
         $data = collect($request->validated())->except('password')->toArray();
         $data['password'] = $request->input('password');
+        $data['must_change_password'] = true;
 
         $user = DB::transaction(function () use ($data) {
             $user = User::create($data);
@@ -60,6 +62,7 @@ class UserController extends Controller
 
         if ($request->filled('password')) {
             $data['password'] = $request->input('password');
+            $data['must_change_password'] = true;
         }
 
         $protected = DB::transaction(function () use ($user, $data) {
@@ -69,6 +72,10 @@ class UserController extends Controller
                 return true;
             }
             $user->update($data);
+            if (isset($data['password'])) {
+                $user->update(['remember_token' => Str::random(60)]);
+                DB::table('sessions')->where('user_id', $user->id)->delete();
+            }
             ActivityLog::record('user', 'perubahan', $user->id, 'Akun diperbarui; role '.$user->role.'; status '.($user->is_active ? 'aktif' : 'nonaktif').'.');
 
             return false;

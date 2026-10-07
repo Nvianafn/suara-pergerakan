@@ -226,6 +226,12 @@ R2 publik yang disepakati: `pmiisaintek-assets`. Bucket privat `pmiisaintek-priv
 - npm ci dan build berhasil. Smoke runtime jsdom di luar repo memverifikasi inisialisasi dua editor, baris baru, deskripsi kosong opsional, sinkronisasi submit, dan toolbar berlabel. ContentSafetyTest: 5 test / 36 assertion lulus. Pemeriksaan visual browser belum tersedia karena browser desktop tidak terhubung. npm audit masih melaporkan 16 vulnerability baseline.
 
 ## Verifikasi final image GD/WebP
+
+## Password akun
+- Akun baru dan password yang diatur ulang super_admin ditandai must_change_password. Middleware web memblokir request akun tersebut kecuali ganti password/logout, termasuk endpoint tulis. Halaman /admin/ganti-password meminta password saat ini, konfirmasi, minimal 8 karakter, dan password berbeda; sukses membuka CMS kembali.
+- Forgot/reset menggunakan broker Laravel, notifikasi email, token satu kali, respons generik, penolakan akun nonaktif, serta throttle login/reset/ganti password. Reset email juga mewajibkan ganti password sesuai acceptance PRD. Reset/ganti password memutar remember token dan membersihkan sesi lama; audit tidak menyimpan rahasia dan input password/token tidak di-flash.
+- Suite SQL Server: 76 test / 405 assertion lulus. SQLite: 76 test / 379 assertion, 9 skip. Setelah penambahan invalidasi sesi admin, tes terarah SQL Server: 5 test / 45 assertion lulus. Migration development, npm ci/build, Pint dan diff check berhasil.
+- Email pengiriman nyata belum diuji: development memakai MAIL_MAILER=log; production perlu SMTP yang berfungsi. Command bootstrap super_admin pertama masih perlu dibuat.
 - Build development berhasil dengan WebP enabled, PHP 8.4.26, sqlsrv/pdo_sqlsrv 5.13.3. Tes gambar asli PNG privat dan JPEG publik: 2 test / 11 assertion lulus (konversi WebP, resize, payload tambahan terhapus, file dapat dihapus).
 - Suite SQL Server lengkap pada suara_pergerakan_test: 74 test / 378 assertion lulus tanpa skip. Container preview dibuat ulang memakai image baru; homepage dan login HTTP 200. Penyimpanan R2 dan deployment Azure tetap belum diverifikasi.
 

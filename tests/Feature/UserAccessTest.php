@@ -20,6 +20,9 @@ class UserAccessTest extends TestCase
         $this->post(route('admin.users.store'), $data + ['biro_id' => Biro::first()->id])->assertSessionHasNoErrors();
         $user = User::where('email', $data['email'])->firstOrFail();
         $this->assertSame('admin_biro', $user->role);
+        $this->assertTrue($user->must_change_password);
+        $this->actingAs($user)->put(route('password.update'), ['current_password' => 'password123', 'password' => 'owner-password', 'password_confirmation' => 'owner-password'])->assertSessionHasNoErrors();
+        $user->refresh();
         $this->actingAs($user)->get('/admin/riwayat')->assertForbidden();
         $this->assertDatabaseHas('riwayat_aktivitas', ['user_id' => $user->id, 'aksi' => 'penolakan']);
     }

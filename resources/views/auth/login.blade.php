@@ -35,6 +35,7 @@
   @if ($errors->any())
     <div class="auth-error">{{ $errors->first() }}</div>
   @endif
+  @if(session('status'))<p role="status">{{ session('status') }}</p>@endif
 
   <form method="POST" action="{{ route('login') }}">
     @csrf
@@ -50,7 +51,7 @@
     <button type="submit" class="btn btn-primary">Masuk &rarr;</button>
   </form>
 
-  <div class="auth-foot"><a href="{{ route('home') }}">&larr; Kembali ke situs</a></div>
+   <div class="auth-foot"><a href="{{ route('password.request') }}">Lupa password?</a> · <a href="{{ route('home') }}">&larr; Kembali ke situs</a></div>
 </div>
 </body>
 </html>

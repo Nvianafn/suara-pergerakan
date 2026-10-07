@@ -13,7 +13,7 @@ class User extends Authenticatable
     protected $attributes = ['is_active' => true];
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'anggota_id', 'biro_id', 'is_active',
+        'name', 'email', 'password', 'role', 'anggota_id', 'biro_id', 'is_active', 'must_change_password',
     ];
 
     protected $hidden = [
@@ -26,6 +26,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'must_change_password' => 'boolean',
             'biro_id' => 'integer',
         ];
     }

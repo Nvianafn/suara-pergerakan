@@ -93,6 +93,7 @@
         <h1>@yield('title', 'Dashboard')</h1>
       </div>
       <div class="admin-user">
+        <a class="btn-logout" href="{{ route('password.change') }}">Ganti password</a>
         <span class="av">{{ strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span>
         <span><b>{{ auth()->user()->name }}</b><small>{{ ucfirst(str_replace('_', ' ', auth()->user()->role)) }}</small></span>
         <form method="POST" action="{{ route('logout') }}">
