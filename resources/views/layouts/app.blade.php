@@ -8,8 +8,9 @@
 @include('partials.head-meta')
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @stack('styles')
+@vite('resources/css/public.css')
 </head>
-<body>
+<body class="public-body">
 
 @include('partials.nav')
 

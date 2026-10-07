@@ -1,0 +1,53 @@
+/* Public reading and navigation rhythm. Loaded after page-specific styles. */
+.public-body { font-size: 16px; line-height: 1.7; background: #f8fafc; }
+.public-body::before { background: linear-gradient(180deg, #f8fafc, #f1f5fa); }
+.public-body :is(h1,h2,h3,h4,h5) { line-height: 1.25; letter-spacing: -.025em; text-wrap: balance; overflow-wrap: anywhere; }
+.public-body p { text-wrap: pretty; }
+.public-body .wrap { max-width: 1200px; padding-inline: clamp(20px, 4vw, 48px); }
+.public-body section { padding-block: clamp(48px, 6vw, 80px); }
+.public-body .page-hero { padding-top: 144px; padding-bottom: 56px; }
+.public-body .page-hero h1 { font-size: clamp(2rem, 4vw, 3rem); }
+.public-body .hero-copy h1 { font-size: clamp(2.25rem, 5vw, 3.75rem); line-height: 1.15; }
+.public-body .sec-head { margin-bottom: 36px; }
+.public-body :is(.sec-head h2,.about-text h2) { font-size: clamp(1.75rem, 3vw, 2.5rem); }
+.public-body :is(.karya-card h3,.keg-body h3,.biro-card h3) { font-size: 1.2rem; line-height: 1.4; }
+.public-body :is(.karya-card p,.biro-card p,.nilai p,.vm-card li) { font-size: 1rem; line-height: 1.75; }
+.public-body :is(.keg-body .meta,.karya-card .k-foot small,.related small,.other-keg .meta,.leader small) { font-size: 13px; line-height: 1.6; letter-spacing: 0; }
+.public-body :is(.chip,.k-type,.tag-chip,.keg-thumb .tag,.eyebrow,.crumbs) { font-size: 13px; }
+.public-body .eyebrow { letter-spacing: .1em; }
+.public-body .crumbs, .public-body .crumbs a { color: #c8d6f2; }
+.public-body .crumbs { flex-wrap: wrap; }
+.public-body .prose { font-family: var(--font-serif); font-size: 1.125rem; line-height: 1.8; max-width: 65ch; margin-inline: auto; overflow-wrap: anywhere; }
+.public-body .prose p { margin-bottom: 1.25em; }
+.public-body .prose :is(h2,h3,h4) { line-height: 1.35; }
+.public-body .prose h4 { font-size: 1.125rem; margin: 1.8rem 0 .75rem; }
+.public-body .prose ul { list-style: disc; }
+.public-body .prose ol { list-style: decimal; }
+.public-body .prose a { text-decoration-thickness: 1px; }
+.public-body .karya-head h1 { margin-inline: auto; }
+.public-body .karya-byline { flex-wrap: wrap; font-size: 14px; }
+.public-body .card { box-shadow: 0 2px 8px #00206808; border-color: #dce3ed; }
+.public-body .card:hover { transform: none; border-color: #b8c8df; box-shadow: 0 6px 18px #0020680c; }
+.public-body .glass { background: #fffffff2; backdrop-filter: blur(8px); box-shadow: 0 3px 14px #0020680b; }
+.public-body .btn { min-height: 44px; line-height: 1.35; border-radius: 12px; }
+.public-body .chip { min-height: 40px; }
+.public-body .input { font-size: 16px; }
+.public-body :is(a,button,input,select,textarea,summary):focus-visible { outline: 3px solid #2563eb; outline-offset: 4px; }
+.public-body .site-footer :is(a,button):focus-visible, .public-body .page-hero a:focus-visible { outline-color: #fcd400; }
+.public-body .foot-grid > div > p { font-size: 15px; color: #b9c9e9; }
+.public-body .foot-col h4 { font-size: 13px; letter-spacing: .08em; }
+.public-body .copy { font-size: 13px; color: #b9c9e9; }
+.public-body footer.site-footer .brand .brand-txt span { color: #b9c9e9; }
+.public-body .socials a { width: 44px; height: 44px; }
+.public-body #hdr .brand .brand-txt span { font-size: 11px; letter-spacing: .06em; }
+@media(max-width:560px) {
+    .public-body .page-hero { padding-top: 120px; padding-bottom: 40px; }
+    .public-body .prose { font-size: 1.0625rem; line-height: 1.8; }
+    .public-body .sec-head { margin-bottom: 28px; }
+    .public-body .hero-copy p { font-size: 1.0625rem; }
+    .public-body #hdr .brand .brand-txt span { font-size: 10px; }
+    .public-body .btn { white-space: normal; }
+}
+@media(prefers-reduced-motion:reduce) {
+    .public-body *, .public-body *::before, .public-body *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
