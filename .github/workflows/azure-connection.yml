@@ -21,4 +21,4 @@ jobs:
       - name: Verify project resource access
         run: |
           az group show --name rg-suara-pergerakan --query '{name:name,state:properties.provisioningState}' --output json
-          az containerapp env show --name env-suara-pergerakan --resource-group rg-suara-pergerakan --query '{name:name,state:properties.provisioningState}' --output json
+          az containerapp env show --name env-ashofah-workload --resource-group rg-ashofah-world --query '{name:name,state:properties.provisioningState}' --output json

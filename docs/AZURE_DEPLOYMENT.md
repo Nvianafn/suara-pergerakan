@@ -11,6 +11,45 @@ Central ditolak dengan `ProvisioningDisabled`; kuota saja tidak menjamin offer.
 Container App web, migration, dan bootstrap produksi belum dijalankan.
 Environment GitHub `production` tersedia dan variables OIDC sudah dikonfigurasi.
 Workflow `azure-connection.yml` memverifikasi federated login dan akses resource.
+Verifikasi OIDC berhasil pada run `37716091270` setelah subject federasi memakai
+claim persis `repo:Nvianafn@147637319/suara-pergerakan@1408415641:environment:production`.
+Image GHCR berhasil dipublikasikan pada run `37716095369` dan pull terverifikasi:
+`ghcr.io/nvianafn/suara-pergerakan@sha256:a3cb3e6c3378740097ba12b9e9ccadb4a6f208db3f12e971d307011efb839f98`.
+Koneksi langsung ke Azure SQL menggunakan image ini berhasil dengan
+`Encrypt=yes;TrustServerCertificate=no`. Firewall bootstrap sementara hanya
+mengizinkan IP lokal; hapus setelah bootstrap selesai.
+Container App `suara-pergerakan` berhasil dibuat di Indonesia Central, tetapi
+belum siap menerima penggunaan normal (runtime secrets/bootstrap belum selesai).
+Pembuatan migration Job ditolak `ExpressEnvironmentResourceNotSupported` pada
+environment tersebut. Environment Consumption `env-suara-eastasia` sedang
+disiapkan untuk memverifikasi dukungan Jobs, dekat dengan region database.
+Jangan menyatakan deployment selesai sebelum migration Jobs, kredensial DB
+runtime terpisah, bootstrap admin dan pemeriksaan aplikasi berhasil.
+
+## Deployment pertama — 8 Oktober 2026
+
+- Environment bersama yang disetujui: `rg-ashofah-world/env-ashofah-workload`,
+  mode WorkloadProfiles, profil Consumption. Resource app/jobs tetap berada
+  di `rg-suara-pergerakan`; aplikasi `ashofah-web` tetap tersendiri.
+- API `2026-07-01` memperlihatkan `environmentMode`; CLI yang digunakan belum
+  memperlihatkan properti ini. Dua environment percobaan dibuat sebagai Express.
+  Pembuatan environment standar baru ditolak kuota global subscription.
+- Web: `suara-web`, min 0/max 1, 0,25 vCPU/0,5 GiB, HTTPS-only.
+  URL sementara: https://suara-web.wonderfulgrass-00f3abce.indonesiacentral.azurecontainerapps.io.
+- Job `suara-migration` pada digest release berhasil (`suara-migration-ckg8f32`).
+  Job bootstrap super admin berhasil (`suara-bootstrap-j7rmcgj`). Login mengarah
+  ke wajib ganti password; password sementara disimpan privat di mesin lokal.
+- Web memakai contained SQL user `suara_web` (db_datareader/db_datawriter),
+  bukan admin migrasi. APP_KEY stabil; R2/SMTP secrets runtime tidak di-image.
+- Firewall SQL mengizinkan egress teramati `70.153.49.16` untuk environment bersama.
+  IP ini bukan jaminan seluruh IP masa depan; verifikasi tiap revision/restart.
+- OIDC mendapat Contributor di resource group proyek dan Reader pada environment
+  bersama saja. Workflow deploy manual memakai digest, migrasi satu job, update
+  web, dan HTTP check; acceptance login/media serta backup tetap perlu diperiksa.
+- Homepage dan login HTTP 200. Tes email Azure ditolak Brevo `525 Unauthorized
+  IP address`; otorisasi egress di Brevo diperlukan sebelum reset dianggap lolos.
+- Backup/export/restore, media production, custom domain dan cleanup resource
+  percobaan belum selesai. Deployment belum memenuhi seluruh acceptance PRD.
 Build GHCR pertama berhasil membangun image tetapi smoke check terlalu cepat
 mengakses port saat startup (connection reset); retry mencakup error startup.
 

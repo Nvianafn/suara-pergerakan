@@ -1,0 +1,53 @@
+name: Deploy production image
+
+on:
+  workflow_dispatch:
+    inputs:
+      digest:
+        description: 'Verified GHCR digest (sha256:...)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: suara-production-release
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Validate image identity
+        env:
+          DIGEST: ${{ inputs.digest }}
+        run: |
+          [[ "$DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]] || exit 1
+          echo "IMAGE=ghcr.io/nvianafn/suara-pergerakan@$DIGEST" >> "$GITHUB_ENV"
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Migrate using release image
+        run: |
+          az containerapp job update -g rg-suara-pergerakan -n suara-migration --image "$IMAGE" --output none
+          execution=$(az containerapp job start -g rg-suara-pergerakan -n suara-migration --query name -o tsv)
+          for attempt in $(seq 1 90); do
+            status=$(az containerapp job execution show -g rg-suara-pergerakan -n suara-migration --job-execution-name "$execution" --query properties.status -o tsv)
+            if [ "$status" = Succeeded ]; then exit 0; fi
+            if [ "$status" = Failed ] || [ "$status" = Stopped ]; then exit 1; fi
+            sleep 5
+          done
+          exit 1
+      - name: Update web revision and check HTTP
+        run: |
+          az containerapp update -g rg-suara-pergerakan -n suara-web --image "$IMAGE" --output none
+          host=$(az containerapp show -g rg-suara-pergerakan -n suara-web --query properties.configuration.ingress.fqdn -o tsv)
+          curl --fail --retry 15 --retry-delay 5 --retry-all-errors --max-time 60 "https://$host/up"
+          curl --fail --retry 5 --retry-delay 5 --retry-all-errors --max-time 60 "https://$host/" --output /dev/null
+          echo "Deployed $IMAGE to https://$host" >> "$GITHUB_STEP_SUMMARY"
