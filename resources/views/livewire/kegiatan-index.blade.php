@@ -60,7 +60,7 @@
         <div class="pager">{{ $kegiatan->links() }}</div>
       @else
         <div class="empty-state">
-          <p style="font-size:2.5rem;margin-bottom:.5rem">&#128197;</p>
+          <p><x-icon name="calendar" :size="40"/></p>
           <h3>Belum ada kegiatan</h3>
           <p>Belum ada kegiatan pada kategori ini.</p>
         </div>

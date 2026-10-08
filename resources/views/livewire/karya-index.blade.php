@@ -42,8 +42,8 @@
         @endforeach
       </div>
       <div class="search-box">
-        <span class="ic">&#128269;</span>
-        <input type="text" wire:model.live.debounce.400ms="search" placeholder="Cari judul karya...">
+        <span class="ic"><x-icon name="search" :size="18"/></span>
+        <input type="text" wire:model.live.debounce.400ms="search" placeholder="Cari judul karya..." aria-label="Cari judul karya">
       </div>
     </div>
 
@@ -65,7 +65,7 @@
         <div class="pager">{{ $karya->links() }}</div>
       @else
         <div class="empty-state">
-          <p style="font-size:2.5rem;margin-bottom:.5rem">&#128220;</p>
+          <p><x-icon name="book" :size="40"/></p>
           <h3>Belum ada karya</h3>
           <p>Tidak ditemukan karya yang cocok dengan filter atau pencarianmu.</p>
         </div>

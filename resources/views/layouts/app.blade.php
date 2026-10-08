@@ -9,6 +9,7 @@
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @stack('styles')
 @vite('resources/css/public.css')
+@vite('resources/css/redesign.css')
 </head>
 <body @class(['public-body', 'home-page' => request()->routeIs('home')])>
 

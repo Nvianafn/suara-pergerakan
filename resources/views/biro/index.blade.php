@@ -19,7 +19,7 @@
 @endpush
 
 @section('content')
-@php $icons = ['&#128218;','&#129309;','&#128241;','&#127757;','&#9819;','&#128737;']; @endphp
+@php $icons = ['book', 'people', 'chat', 'globe', 'spark', 'shield']; @endphp
 <section class="page-hero">
   <div class="wrap">
     <div class="crumbs"><a href="{{ route('home') }}">Beranda</a><span>&rsaquo;</span><span>Biro</span></div>
@@ -35,7 +35,7 @@
       @foreach ($biro as $b)
       <a href="{{ route('biro.show', $b) }}" class="biro-item glass reveal">
         <span class="bar" style="background:{{ $b->warna_aksen ?? '#003399' }}"></span>
-        <div class="ic">{!! $icons[$loop->index % count($icons)] !!}</div>
+        <div class="ic"><x-icon :name="$icons[$loop->index % count($icons)]" :size="32"/></div>
         <div>
           <h3>{{ $b->nama }}</h3>
           <p>{{ Str::limit($b->deskripsi, 110) }}</p>

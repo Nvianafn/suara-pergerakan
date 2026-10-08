@@ -73,13 +73,13 @@
       <div class="info-side reveal">
         <div class="info-card glass">
           <h4>Informasi Kontak</h4>
-          <div class="info-row"><span class="ic">&#9993;</span><span><b>Email</b><a href="mailto:{{ Setting::get('email_kontak') }}">{{ Setting::get('email_kontak') }}</a></span></div>
-          <div class="info-row"><span class="ic">&#128241;</span><span><b>WhatsApp</b><a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', Setting::get('no_wa', '')) }}">{{ Setting::get('no_wa') }}</a></span></div>
-          <div class="info-row"><span class="ic">&#128205;</span><span><b>Sekretariat</b><small>{{ Setting::get('alamat') }}</small></span></div>
+          <div class="info-row"><span class="ic"><x-icon name="mail"/></span><span><b>Email</b><a href="mailto:{{ Setting::get('email_kontak') }}">{{ Setting::get('email_kontak') }}</a></span></div>
+          <div class="info-row"><span class="ic"><x-icon name="chat"/></span><span><b>WhatsApp</b><a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', Setting::get('no_wa', '')) }}">{{ Setting::get('no_wa') }}</a></span></div>
+          <div class="info-row"><span class="ic"><x-icon name="pin"/></span><span><b>Sekretariat</b><small>{{ Setting::get('alamat') }}</small></span></div>
           @foreach(['instagram' => 'Instagram', 'youtube' => 'YouTube', 'facebook' => 'Facebook', 'tiktok' => 'TikTok', 'x' => 'X'] as $network => $label)
           @php($url = Setting::get('sosmed_'.$network))
           @if($url && preg_match('~^https?://~i', $url))
-          <div class="info-row"><span class="ic">&#128247;</span><span><b>{{ $label }}</b><a href="{{ $url }}" target="_blank" rel="noopener noreferrer nofollow">{{ $label }}</a></span></div>
+          <div class="info-row"><span class="ic"><x-icon name="globe"/></span><span><b>{{ $label }}</b><a href="{{ $url }}" target="_blank" rel="noopener noreferrer nofollow">{{ $label }}</a></span></div>
           @endif
           @endforeach
         </div>

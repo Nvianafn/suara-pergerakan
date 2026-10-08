@@ -59,9 +59,9 @@
       <aside class="keg-side">
         <div class="info-card glass">
           <h4>Detail Kegiatan</h4>
-          <div class="info-row"><span class="ic">&#128197;</span><span><b>{{ $kegiatan->tanggal->translatedFormat('d F Y') }}</b><small>Tanggal pelaksanaan</small></span></div>
-          @if ($kegiatan->lokasi)<div class="info-row"><span class="ic">&#128205;</span><span><b>{{ $kegiatan->lokasi }}</b><small>Lokasi</small></span></div>@endif
-          @if ($kegiatan->biro_label)<div class="info-row"><span class="ic">&#127942;</span><span><b>{{ $kegiatan->biro_label }}</b><small>Penyelenggara</small></span></div>@endif
+          <div class="info-row"><span class="ic"><x-icon name="calendar"/></span><span><b>{{ $kegiatan->tanggal->translatedFormat('d F Y') }}</b><small>Tanggal pelaksanaan</small></span></div>
+          @if ($kegiatan->lokasi)<div class="info-row"><span class="ic"><x-icon name="pin"/></span><span><b>{{ $kegiatan->lokasi }}</b><small>Lokasi</small></span></div>@endif
+          @if ($kegiatan->biro_label)<div class="info-row"><span class="ic"><x-icon name="people"/></span><span><b>{{ $kegiatan->biro_label }}</b><small>Penyelenggara</small></span></div>@endif
         </div>
 
         @if ($lainnya->count())

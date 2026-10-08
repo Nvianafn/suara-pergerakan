@@ -92,12 +92,12 @@
   <div class="wrap">
     <div class="vm-grid">
       <div class="vm-card glass reveal">
-        <div class="ic">&#127919;</div>
+        <div class="ic"><x-icon name="spark" :size="32"/></div>
         <h3>Visi</h3>
         <p style="color:var(--on-surface-variant)">{{ \App\Models\Setting::get('visi') ?: 'Terbentuknya kader Saintek yang bertakwa, berintelektual tinggi, dan berkomitmen pada nilai kemanusiaan serta pergerakan.' }}</p>
       </div>
       <div class="vm-card glass reveal">
-        <div class="ic">&#128203;</div>
+        <div class="ic"><x-icon name="book" :size="32"/></div>
         <h3>Misi</h3>
         @if($mission)
         <div class="prose">{!! $mission !!}</div>

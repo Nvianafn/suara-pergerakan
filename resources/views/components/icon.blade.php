@@ -1,6 +1,9 @@
 @props(['name' => 'arrow', 'size' => 24])
 <svg {{ $attributes->merge(['width' => $size, 'height' => $size, 'class' => 'ui-icon']) }} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
 @switch($name)
+  @case('search') <circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/> @break
+  @case('mail') <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/> @break
+  @case('pin') <path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 0 1 14 0Z"/><circle cx="12" cy="10" r="2"/> @break
   @case('menu') <path d="M4 6h16M4 12h16M4 18h16"/> @break
   @case('book') <path d="M12 5v15M12 5C8 2 3 4 3 4v15s5-2 9 1c4-3 9-1 9-1V4s-5-2-9 1Z"/> @break
   @case('people') <circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M21 20v-2a6 6 0 0 0-4-5"/> @break

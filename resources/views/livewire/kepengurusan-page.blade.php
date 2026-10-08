@@ -1,4 +1,4 @@
-<div>
+<div class="structure-page">
 @push('styles')
 <style>
 .periode-bar{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:2.5rem}
@@ -79,8 +79,10 @@
         <div class="bph-panel">
           <span class="eyebrow">Pimpinan Rayon</span>
           <h2>Badan Pengurus Harian</h2>
+          @foreach ($bph->groupBy('jabatan') as $jabatan => $kelompok)
+          <h3 class="structure-role">{{ $jabatan }}</h3>
           <div class="bph-grid">
-            @foreach ($bph as $p)
+            @foreach ($kelompok as $p)
             <div class="bph-card">
               <div class="ph">
                 @if ($p->anggota->foto_url)
@@ -94,6 +96,7 @@
             </div>
             @endforeach
           </div>
+          @endforeach
         </div>
         @endif
 
@@ -105,12 +108,12 @@
                   ->values();
             @endphp
             @if ($anggotaBiro->count())
-            <div class="biro-card">
-              <div class="b-head">
+            <details class="biro-card structure-bureau" open>
+              <summary class="b-head">
                 <span class="dot" style="background:{{ $b->warna_aksen ?? '#003399' }}"></span>
                 <h3>{{ $anggotaBiro->first()->biro_nama ?? $b->nama }}</h3>
                 <span class="count">{{ $anggotaBiro->count() }} pengurus</span>
-              </div>
+              </summary>
               <div class="b-body">
                 @foreach ($anggotaBiro as $p)
                 <div class="person">
@@ -128,7 +131,7 @@
                 </div>
                 @endforeach
               </div>
-            </div>
+            </details>
             @endif
           @endforeach
         </div>

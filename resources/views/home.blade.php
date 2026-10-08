@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="movement-visual">
-        <div class="visual-frame"><img src="{{ \App\Models\Setting::imageUrl('hero_image', 'images/hero.png') }}" alt="Kebersamaan kader PMII Rayon Saintek" fetchpriority="high" width="640" height="720"></div>
+        <div class="identity-orbit"><span class="orbit-ring orbit-ring-outer"></span><span class="orbit-ring orbit-ring-inner"></span><x-icon name="spark" :size="36"/><img src="{{ \App\Models\Setting::imageUrl('logo', 'images/logo.png') }}" alt="Lambang PMII Rayon Saintek" fetchpriority="high" width="280" height="280"><span class="identity-word">SAINTEK<br>BERGERAK.</span></div>
         <span class="visual-label">BERAKAR DALAM NILAI · BERGERAK UNTUK PERUBAHAN</span>
       </div>
     </div>
@@ -33,6 +33,7 @@
   <section class="movement-about" id="tentang">
     <div class="wrap">
       <div class="intro-grid"><div><span class="eyebrow">Lebih dari sebuah organisasi</span><h2>Tempat bertemu.<br>Ruang untuk <em>bertumbuh.</em></h2></div><div><p>{{ \App\Models\Setting::get('deskripsi_singkat') ?: 'PMII Rayon Saintek adalah rumah kaderisasi bagi mahasiswa Sains dan Teknologi. Di sini, keilmuan bertemu nilai keislaman, dan gagasan tumbuh menjadi kontribusi bagi masyarakat.' }}</p><a href="{{ route('tentang') }}" class="movement-text-link">Cerita tentang kami <x-icon :size="20"/></a></div></div>
+      <figure class="rayon-documentation"><img src="{{ \App\Models\Setting::imageUrl('hero_image', 'images/hero.png') }}" alt="Kebersamaan kader PMII Rayon Saintek" loading="lazy" width="1200" height="640"><figcaption>Satu rumah, banyak cerita. Bersama dalam pergerakan.</figcaption></figure>
       <div class="movement-stats">
         @foreach(['anggota' => 'Anggota aktif', 'biro' => 'Biro organisasi', 'kegiatan' => 'Kegiatan terdokumentasi', 'karya' => 'Karya dipublikasikan'] as $key => $label)
         <div><strong>{{ $stats[$key] }}</strong><span>{{ $label }}</span></div>
