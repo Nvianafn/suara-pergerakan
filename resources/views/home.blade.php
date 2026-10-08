@@ -9,19 +9,22 @@
   <section class="movement-hero">
     <div class="wrap movement-grid">
       <div class="movement-copy">
-        <span class="eyebrow"><span class="status-dot"></span> Rumah gagasan &amp; pergerakan</span>
-        <h1>Berakar dalam nilai.<br>Bergerak untuk <em>perubahan.</em></h1>
+        <span class="eyebrow">Selamat datang di rumah pergerakan</span>
+        <h1>{{ $rayon }}</h1>
+        <div class="hero-motto">Dzikir, Fikir, Amal Sholeh.</div>
         <p>Ruang bertumbuh, berpikir, dan berkarya bersama {{ $rayon }}. Merawat tradisi, menyalakan keberanian, membawa ilmu menjadi aksi.</p>
         <div class="movement-actions">
           <a href="{{ route('tentang') }}" class="btn btn-primary">Kenali rayon kami <x-icon name="arrow" :size="20"/></a>
           <a href="{{ route('karya.index') }}" class="movement-text-link">Jelajahi gagasan <x-icon name="arrow" :size="20"/></a>
         </div>
-        <div class="hero-period"><span>PERIODE KEPENGURUSAN</span><strong>{{ $periodeAktif?->nama ?? 'Bersama membangun pergerakan' }}</strong></div>
+        <div class="hero-highlights">
+          <div class="hero-highlight"><div><strong>{{ $stats['anggota'] }}</strong><span>Anggota aktif</span></div><x-icon name="people" :size="32"/></div>
+          <div class="hero-highlight"><div><strong>{{ $periodeAktif?->tahun_mulai ?? '—' }}</strong><span>{{ $periodeAktif?->nama ?? 'Periode belum ditetapkan' }}</span></div><x-icon name="shield" :size="32"/></div>
+        </div>
       </div>
       <div class="movement-visual">
         <div class="visual-frame"><img src="{{ \App\Models\Setting::imageUrl('hero_image', 'images/hero.png') }}" alt="Kebersamaan kader PMII Rayon Saintek" fetchpriority="high" width="640" height="720"></div>
-        <div class="visual-caption"><span>01 / SEMANGAT KITA</span><strong>Dzikir. Fikir.<br>Amal Sholeh.</strong><x-icon name="spark" :size="38"/></div>
-        <span class="visual-label">SAINTEK BERGERAK</span>
+        <span class="visual-label">BERAKAR DALAM NILAI · BERGERAK UNTUK PERUBAHAN</span>
       </div>
     </div>
   </section>

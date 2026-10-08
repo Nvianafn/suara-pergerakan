@@ -1,4 +1,29 @@
 /* Public reading and navigation rhythm. Loaded after page-specific styles. */
+.public-body.home-page #hdr:not(.scrolled) .nav{background:transparent;box-shadow:none;border-color:transparent;backdrop-filter:none}
+.public-body.home-page #hdr:not(.scrolled) :is(.brand b,.nav-links a,.menu-btn){color:#fff6c9}
+.public-body.home-page #hdr:not(.scrolled) .brand .brand-txt span{color:#c8d6f2}
+.public-body.home-page #hdr:not(.scrolled) .nav-links a.active{color:#fcd400;background:transparent}
+.public-body.home-page #hdr:not(.scrolled) .nav>.btn-primary{background:transparent;color:#fcd400;border:1px solid #fcd400;border-radius:12px}
+.public-body.home-page .movement-hero{min-height: min(900px,100svh);padding-top:160px;padding-bottom:70px;position:relative;isolation:isolate;background:#071735;color:#fff6c9}
+.public-body.home-page .movement-hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#071735 0%,#071735d9 38%,#07173530 75%),linear-gradient(0deg,#071735 0%,transparent 45%),radial-gradient(ellipse at 90% 20%,#47665b70,transparent 70%)}
+.public-body.home-page .movement-hero::after{content:"";position:absolute;inset:0;z-index:-1;opacity:.12;background-image:linear-gradient(#b8c8df 1px,transparent 1px),linear-gradient(90deg,#b8c8df 1px,transparent 1px);background-size:64px 64px;mask-image:linear-gradient(90deg,black,transparent)}
+.home-page .movement-grid{grid-template-columns:1.25fr 1fr;min-height:570px;gap:32px}
+.home-page .movement-copy{position:relative;z-index:2}
+.home-page .movement-copy .eyebrow{color:#fff6c9;font-family:var(--font-serif);font-size:14px;letter-spacing:.04em}
+.home-page .movement-copy h1{color:#fff6c9;font-size:clamp(2.8rem,4.8vw,4.6rem);margin:18px 0 14px;line-height:1.12}
+.hero-motto{font-family:var(--font-serif);font-style:italic;font-size:clamp(1.5rem,2.4vw,2rem);margin-bottom:22px}
+.home-page .movement-copy p{color:#d0d7e5;font-size:16px;max-width:52ch}
+.home-page .movement-actions .movement-text-link{color:#fff6c9}
+.hero-highlights{display:flex;gap:20px;margin-top:40px;flex-wrap:wrap}
+.hero-highlight{display:flex;align-items:center;justify-content:space-between;gap:28px;min-width:185px;max-width:300px;padding:18px 22px;border:1px solid #d8d89955;outline:1px solid #d8d89922;outline-offset:4px;border-radius:12px;background:linear-gradient(145deg,#fcd40025,#8aa4ff12)}
+.hero-highlight strong{font-family:var(--font-serif);font-size:38px;font-weight:400;display:block;line-height:1.2}
+.hero-highlight span{display:block;font-size:12px;color:#e2e7f2;margin-top:5px}
+.home-page .movement-visual{height:570px;padding:0;position:relative}
+.home-page .visual-frame{position:absolute;inset:-80px -100px -70px -20px;height:auto;border-radius:0;background:none;mask-image:linear-gradient(90deg,transparent,black 28%),linear-gradient(0deg,transparent,black 25%);mask-composite:intersect}
+.home-page .visual-frame img{width:100%;height:100%;object-fit:cover;object-position:60% center;opacity:.8}
+.home-page .visual-label{top:auto;bottom:10px;right:0;writing-mode:horizontal-tb;font-size:9px;letter-spacing:.16em;color:#fff6c9}
+.home-page .values-strip{border-top:1px solid #ffffff15}
+@media(max-width:800px){.home-page .movement-grid{grid-template-columns:1fr;min-height:0}.public-body.home-page .movement-hero{min-height:0;padding-top:140px;padding-bottom:40px}.home-page .movement-visual{height:300px;max-width:none;margin-top:12px}.home-page .visual-frame{inset:0 -24px -40px;mask-image:linear-gradient(0deg,transparent,black 30%,black 85%,transparent);mask-composite:add}.home-page .movement-copy h1{font-size:clamp(2.6rem,8vw,4rem)}.hero-highlight{min-width:0;flex:1;padding:16px;gap:15px}.hero-highlight strong{font-size:30px}.hero-highlight svg{width:26px}.hero-highlights{gap:14px}.home-page .visual-label{bottom:0;right:auto;left:0}}
 .ui-icon{display:inline-block;flex-shrink:0;vertical-align:middle}
 .public-body .btn{gap:.65rem}
 .public-body #hdr .nav{border-radius:18px;box-shadow:0 8px 30px #0020680a;background:#ffffffed}
@@ -108,4 +133,9 @@
 }
 @media(prefers-reduced-motion:reduce) {
     .public-body *, .public-body *::before, .public-body *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+@media(max-width:800px){
+    .public-body.home-page .movement-hero{padding-top:120px;padding-bottom:36px}
+    .home-page .movement-visual{height:280px}
+    .home-page .movement-grid{gap:24px}
 }

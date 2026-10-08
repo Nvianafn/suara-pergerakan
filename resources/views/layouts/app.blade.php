@@ -10,7 +10,7 @@
 @stack('styles')
 @vite('resources/css/public.css')
 </head>
-<body class="public-body">
+<body @class(['public-body', 'home-page' => request()->routeIs('home')])>
 
 @include('partials.nav')
 
