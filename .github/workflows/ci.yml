@@ -39,6 +39,12 @@ jobs:
           extensions: gd, intl, zip, bcmath, sqlsrv, pdo_sqlsrv
           coverage: none
           tools: composer:v2
+      - name: Install SQL Server ODBC driver
+        run: |
+          curl -fsSL https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb -o /tmp/packages-microsoft-prod.deb
+          sudo dpkg -i /tmp/packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -58,7 +64,7 @@ jobs:
                   exit(0);
               } catch (PDOException $exception) {
                   if ($attempt === 59) {
-                      fwrite(STDERR, "SQL Server initialization failed.\n");
+                      fwrite(STDERR, "SQL Server initialization failed: ".$exception->getMessage()."\n");
                       exit(1);
                   }
                   sleep(2);
