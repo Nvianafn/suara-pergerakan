@@ -41,6 +41,10 @@ Actions. Jangan mencetak `.env`, secrets, connection string, atau log SqlPackage
 
 ## Verifikasi 8 Oktober 2026
 
+- Workflow end-to-end `37722153027` sukses: export/copy, recovery, HTTP health,
+  dan retensi. Run pertama `37721875445` berhasil export tetapi gagal pada
+  recovery duplikat; diperbaiki dengan recovery idempotent (`00f4b33`). Jadwal
+  cron sudah dikonfigurasi; eksekusi terjadwal pertama masih perlu diperiksa.
 - Snapshot pertama: `snapshots/2026/10/08/030748-8a4cd9ae17b2/manifest.json`.
 - BACPAC 15.294 bytes, 2 objek media; private bucket saat ini kosong.
 - Export + maintenance dari lokal: 83 detik, layanan direaktivasi.
