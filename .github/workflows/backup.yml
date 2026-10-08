@@ -1,0 +1,79 @@
+name: Production archive backup
+
+on:
+  schedule:
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+    inputs:
+      media:
+        description: 'Include both media buckets (weekly or after large uploads)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: suara-production-release
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production
+    env:
+      DB_HOST: ${{ secrets.BACKUP_DB_HOST }}
+      DB_DATABASE: suara_pergerakan
+      DB_USERNAME: ${{ secrets.BACKUP_DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.BACKUP_DB_PASSWORD }}
+      BACKUP_R2_ENDPOINT: ${{ secrets.BACKUP_R2_ENDPOINT }}
+      BACKUP_R2_BUCKET: pmiisaintek-backups
+      BACKUP_R2_ACCESS_KEY_ID: ${{ secrets.BACKUP_R2_ACCESS_KEY_ID }}
+      BACKUP_R2_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_R2_SECRET_ACCESS_KEY }}
+      R2_ENDPOINT: ${{ secrets.BACKUP_SOURCE_R2_ENDPOINT }}
+      R2_ACCESS_KEY_ID: ${{ secrets.BACKUP_SOURCE_R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_SOURCE_R2_SECRET_ACCESS_KEY }}
+      R2_PUBLIC_BUCKET: pmiisaintek-assets
+      R2_PRIVATE_BUCKET: pmiisaintek-private
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Select snapshot type and build export runner
+        env:
+          REQUEST_MEDIA: ${{ inputs.media }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          media=false
+          if [ "$REQUEST_MEDIA" = true ] || [ "$(date -u +%u)" = 7 ] || [ "$(date -u +%d)" = 01 ]; then media=true; fi
+          echo "BACKUP_MEDIA=$media" >> "$GITHUB_ENV"
+          docker build -f docker/operations/Dockerfile -t suara-operations:runner .
+      - name: Export and copy verified archives
+        run: python3 scripts/backup-production.py
+      - name: Recover service and clean temporary firewall
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          path = os.environ['RUNNER_TEMP'] + '/backup-recovery.json'
+          if not os.path.exists(path):
+              raise SystemExit(0)
+          state = json.load(open(path))
+          subprocess.run(['docker', 'stop', '-t', '60', 'suara-backup'], capture_output=True)
+          for revision in state['revisions']:
+              subprocess.run(['az', 'containerapp', 'revision', 'activate', '-g', 'rg-suara-pergerakan', '-n', 'suara-web', '--revision', revision, '-o', 'none'], check=True)
+          subprocess.run(['az', 'sql', 'server', 'firewall-rule', 'delete', '-g', 'rg-suara-pergerakan', '-s', state['server'], '-n', state['rule'], '-o', 'none'], check=True)
+          PY
+      - name: Check recovered HTTP endpoint
+        if: always()
+        run: |
+          host=$(az containerapp show -g rg-suara-pergerakan -n suara-web --query properties.configuration.ingress.fqdn -o tsv)
+          curl --fail --retry 12 --retry-delay 5 --retry-all-errors --max-time 60 "https://$host/up"
+      - name: Apply verified archive retention
+        run: |
+          docker run --rm -e BACKUP_R2_ENDPOINT -e BACKUP_R2_BUCKET -e BACKUP_R2_ACCESS_KEY_ID -e BACKUP_R2_SECRET_ACCESS_KEY --entrypoint php suara-operations:runner /ops/retention.php

@@ -50,6 +50,17 @@ runtime terpisah, bootstrap admin dan pemeriksaan aplikasi berhasil.
   IP address`; otorisasi egress di Brevo diperlukan sebelum reset dianggap lolos.
 - Backup/export/restore, media production, custom domain dan cleanup resource
   percobaan belum selesai. Deployment belum memenuhi seluruh acceptance PRD.
+- Setelah IP Brevo diotorisasi, submission reset production berhasil HTTP 200
+  dengan notifikasi pengiriman; konfirmasi inbox dan reset oleh pemilik masih
+  diperlukan. Dua disk R2 dari runtime Azure lolos put/get/delete objek unik
+  `deployment-check`, dan cleanup diverifikasi. Ini tes storage, bukan acceptance
+  lengkap upload CMS/foto privat.
+- Backup eksternal pertama dan import SQL Server lokal berhasil pada 8 Oktober
+  2026 (21 tabel/5 filtered index/17 FK/11 CHECK; maintenance 83 detik). Rincian
+  scheduler, retensi, batas verifikasi, dan restore ada di `BACKUP_OPERATIONS.md`.
+- Job bootstrap dihapus setelah sukses untuk menghapus secrets password awal
+  dari resource operasional. Firewall bootstrap lokal dan egress environment
+  percobaan juga dihapus; rule environment bersama tetap digunakan.
 Build GHCR pertama berhasil membangun image tetapi smoke check terlalu cepat
 mengakses port saat startup (connection reset); retry mencakup error startup.
 
