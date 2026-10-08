@@ -8,14 +8,14 @@
           <span class="brand-txt"><b>{{ Setting::get('nama_rayon', 'PMII Rayon Saintek') }}</b><span>{{ Setting::get('tagline') ?: 'Bergerak · Berpikir · Berkarya' }}</span></span>
         </a>
         <p>{{ Setting::get('deskripsi_singkat') }}</p>
-        <div class="socials">
+        <div class="socials footer-socials" aria-label="Media sosial dan WhatsApp">
           @foreach(['instagram' => 'Instagram', 'youtube' => 'YouTube', 'facebook' => 'Facebook', 'tiktok' => 'TikTok', 'x' => 'X'] as $network => $label)
           @php($socialUrl = Setting::get('sosmed_'.$network))
           @if($socialUrl && preg_match('~^https?://~i', $socialUrl))
-          <a href="{{ $socialUrl }}" aria-label="{{ $label }}" target="_blank" rel="noopener noreferrer nofollow">{{ $label }}</a>
+           <a href="{{ $socialUrl }}" aria-label="{{ $label }}" target="_blank" rel="noopener noreferrer nofollow"><x-icon :name="$network === 'instagram' ? 'instagram' : 'globe'" :size="18"/><span>{{ $label }}</span></a>
           @endif
           @endforeach
-          @if(Setting::get('no_wa'))<a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', Setting::get('no_wa', '')) }}" aria-label="WhatsApp" target="_blank" rel="noopener"><x-icon name="chat"/></a>@endif
+          @if(Setting::get('no_wa'))<a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', Setting::get('no_wa', '')) }}" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><x-icon name="chat" :size="18"/><span>WhatsApp</span></a>@endif
         </div>
       </div>
       <div class="foot-col">
@@ -32,11 +32,11 @@
         <a href="{{ route('kontak') }}">Gabung Kami</a>
         <a href="{{ route('kontak') }}">Kontak</a>
       </div>
-      <div class="foot-col">
+       <div class="foot-col footer-contact">
         <h4>Kontak</h4>
-        <a href="mailto:{{ Setting::get('email_kontak') }}">{{ Setting::get('email_kontak') }}</a>
-        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', Setting::get('no_wa', '')) }}">{{ Setting::get('no_wa') }}</a>
-        <a href="{{ route('kontak') }}">{{ Setting::get('alamat') }}</a>
+        @if(Setting::get('email_kontak'))<a href="mailto:{{ Setting::get('email_kontak') }}"><x-icon name="mail" :size="18"/><span>{{ Setting::get('email_kontak') }}</span></a>@endif
+        @if(Setting::get('no_wa'))<a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', Setting::get('no_wa', '')) }}"><x-icon name="chat" :size="18"/><span>{{ Setting::get('no_wa') }}</span></a>@endif
+        @if(Setting::get('alamat'))<a href="{{ route('kontak') }}"><x-icon name="pin" :size="18"/><span>{{ Setting::get('alamat') }}</span></a>@endif
       </div>
     </div>
     <div class="copy">

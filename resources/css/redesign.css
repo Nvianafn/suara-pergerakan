@@ -28,6 +28,12 @@
 .public-body .site-footer :is(p,.brand-txt span,.foot-bottom){color:#c8d6f2}
 .public-body .site-footer .foot-col h4{color:#fcd400;letter-spacing:.1em;font-size:12px;text-transform:uppercase}
 .public-body .socials a{border:1px solid #ffffff30;background:transparent;border-radius:8px;color:#fff6c9}
+.public-body .footer-socials{flex-wrap:wrap;gap:10px}
+.public-body .footer-socials a{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:auto;min-height:44px;height:auto;padding:10px 12px;font-size:12px;line-height:1.4}
+.public-body .footer-socials a:hover{background:#fcd400;color:#002068;border-color:#fcd400}
+.public-body .footer-contact a{display:flex;align-items:flex-start;gap:10px;max-width:100%;line-height:1.7}
+.public-body .footer-contact a svg{margin-top:4px}
+.public-body .footer-contact a span{min-width:0;overflow-wrap:anywhere}
 .public-body :is(a,button,input,select,textarea,summary):focus-visible{outline:3px solid #003399;outline-offset:4px}
 .public-body .site-footer :is(a,button):focus-visible{outline-color:#fcd400}
 
