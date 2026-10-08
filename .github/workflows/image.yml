@@ -45,7 +45,7 @@ jobs:
             -e APP_ENV=production -e APP_DEBUG=false -e LOG_CHANNEL=stderr \
             -e APP_KEY="base64:$(openssl rand -base64 32)" suara-production:check
           trap 'docker logs smoke; docker rm -f smoke' EXIT
-          curl --fail --retry 20 --retry-delay 2 --retry-connrefused http://127.0.0.1:8085/up
+          curl --fail --retry 20 --retry-delay 2 --retry-all-errors --max-time 10 http://127.0.0.1:8085/up
           curl --fail http://127.0.0.1:8085/healthz
       - name: Push verified image
         id: publish

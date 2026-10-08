@@ -1,0 +1,24 @@
+name: Verify Azure connection
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Verify project resource access
+        run: |
+          az group show --name rg-suara-pergerakan --query '{name:name,state:properties.provisioningState}' --output json
+          az containerapp env show --name env-suara-pergerakan --resource-group rg-suara-pergerakan --query '{name:name,state:properties.provisioningState}' --output json

@@ -1,8 +1,18 @@
 # Deployment Azure — persiapan
 
 Target PRD 7: GHCR → Azure Container Apps Consumption + Azure SQL + R2.
-Status: image production sedang diverifikasi lokal; resource Suara Pergerakan
-di Azure belum dibuat. Login lokal berhasil pada 8 Oktober 2026.
+Status: image production lolos smoke test lokal; CI SQL Server GitHub Actions
+lolos pada commit `407319c`. Login lokal berhasil pada 8 Oktober 2026.
+Resource group `rg-suara-pergerakan` dan environment Consumption
+`env-suara-pergerakan` (Indonesia Central, logs destination none) sudah dibuat.
+Azure SQL `suara_pergerakan` berhasil dibuat di East Asia: `useFreeLimit=true`,
+`freeLimitExhaustionBehavior=AutoPause`, status Online. Free offer di Indonesia
+Central ditolak dengan `ProvisioningDisabled`; kuota saja tidak menjamin offer.
+Container App web, migration, dan bootstrap produksi belum dijalankan.
+Environment GitHub `production` tersedia dan variables OIDC sudah dikonfigurasi.
+Workflow `azure-connection.yml` memverifikasi federated login dan akses resource.
+Build GHCR pertama berhasil membangun image tetapi smoke check terlalu cepat
+mengakses port saat startup (connection reset); retry mencakup error startup.
 
 ## Hasil inspeksi subscription dan biaya
 
