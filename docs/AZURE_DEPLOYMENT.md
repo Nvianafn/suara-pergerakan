@@ -28,6 +28,18 @@ runtime terpisah, bootstrap admin dan pemeriksaan aplikasi berhasil.
 
 ## Deployment pertama — 8 Oktober 2026
 
+- Custom domain `https://rayonsaintek.com` aktif dengan Azure managed certificate
+  `mc-env-ashofah-wo-rayonsaintek-com-5288`, binding SNI. DNS apex A menuju
+  `70.153.96.216`, DNS-only, TXT `asuid` dipertahankan untuk verifikasi.
+  Domain R2 publik dipindah ke `https://assets.rayonsaintek.com`; HTTPS objek
+  terverifikasi. APP_URL dan R2_PUBLIC_URL runtime sudah diperbarui.
+- Smoke test custom domain: homepage, login, forgot-password, kepengurusan,
+  karya, kegiatan, dan built CSS/JS HTTP 200; HTTP→HTTPS 301; guest `/admin`
+  diarahkan ke login. Login pertama sempat HTTP 500 setelah revision update,
+  dua pemeriksaan ulang berhasil 200. Foto legacy ditunda atas arahan pemilik.
+- Workflow deploy digest end-to-end berhasil pada run `37722967845`: OIDC,
+  migration Job, update web dan HTTP probe semuanya sukses. Domain Azure
+  sementara aktif; custom domain aset/website masih menunggu konfigurasi DNS.
 - Environment bersama yang disetujui: `rg-ashofah-world/env-ashofah-workload`,
   mode WorkloadProfiles, profil Consumption. Resource app/jobs tetap berada
   di `rg-suara-pergerakan`; aplikasi `ashofah-web` tetap tersendiri.

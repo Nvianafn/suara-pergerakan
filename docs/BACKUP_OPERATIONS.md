@@ -56,9 +56,18 @@ Actions. Jangan mencetak `.env`, secrets, connection string, atau log SqlPackage
   acceptance restore seluruh alur organisasi atau bukti kapasitas data besar.
 - Retensi smoke test: 1 sehat dipertahankan, 0 dihapus. Uji pemilihan/penghapusan
   lintas kategori masih diperlukan sebelum retensi memiliki banyak snapshot.
-- Objek legacy `foto-anggota/...jpeg` ditemukan pada bucket publik. Identitas dan
-  status persetujuan belum diketahui; perlu diperiksa sebelum go-live. Jangan
+- Objek legacy `foto-anggota/...jpeg` ditemukan pada bucket publik. Pemilik
+  mengonfirmasi ini foto anggota dari deployment VPS lama, bukan Pembina;
+  foto Pembina lama belum ada. Referensi DB dan status persetujuan belum
+  diketahui; migrasi ke privat perlu diselesaikan sebelum go-live. Jangan
   menganggap bucket publik telah lolos audit privasi hanya dari tes backup.
+- Aplikasi image production terhadap database hasil import lokal: homepage,
+  karya, kegiatan, kepengurusan, login super admin dan halaman CMS utama lolos
+  HTTP. Dengan fixture sintetis lokal terpisah dari data asli, foto anggota dan
+  Pembina lolos akses internal, publik setelah consent/penempatan, serta 404
+  setelah consent dicabut bagi guest dan admin_biro. Struktur/arsip fixture
+  memberi HTTP 200. Ini tidak membuktikan pemulihan konten organisasi yang
+  belum ada di snapshot atau restore media ke bucket R2 pemulihan tersendiri.
 
 ## Restore check lokal
 
