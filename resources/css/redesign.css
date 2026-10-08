@@ -37,7 +37,7 @@
 .home-page .movement-copy h1{font-size:clamp(2.8rem,4.5vw,4.3rem);max-width:14ch}
 .home-page .movement-visual{height:460px;display:grid;place-items:center}
 .identity-orbit{position:relative;width:100%;max-width:440px;aspect-ratio:1;display:grid;place-items:center}
-.identity-orbit img{width:52%;height:auto;object-fit:contain;z-index:1;clip-path:circle(49%);filter:drop-shadow(0 20px 35px #0004)}
+.identity-orbit img{width:65%;height:auto;object-fit:contain;z-index:1;clip-path:circle(49%);filter:drop-shadow(0 20px 35px #0004)}
 .orbit-ring{position:absolute;border:1px solid #fcd40040;border-radius:50%;inset:0}
 .orbit-ring-inner{inset:9%;border-style:dashed;border-color:#dce9ff30}
 .identity-orbit>.ui-icon{position:absolute;top:14%;right:8%;color:#fcd400;background:#071735;padding:4px;width:44px;height:44px}
@@ -62,7 +62,7 @@
 .structure-page .bph-panel>.eyebrow{display:flex;justify-content:center}
 .structure-role{text-align:center;color:#fcd400;font-size:13px;text-transform:uppercase;letter-spacing:.12em;margin:32px 0 20px}
 .structure-page .bph-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:24px}
-.structure-page .bph-card{flex:0 1 220px;max-width:100%;margin-bottom:24px}
+.structure-page .bph-card{flex:0 1 220px;max-width:100%}
 .structure-page .bph-card .ph{aspect-ratio:4/5;border-radius:10px;background:#e5eeff;border:1px solid #ffffff30;margin-bottom:18px}
 .structure-page .bph-card small{color:#dce9ff;display:block;margin-top:6px}
 .structure-page .bph-card p{color:#d0d7e5;font-size:13px;margin-top:12px}

@@ -79,10 +79,8 @@
         <div class="bph-panel">
           <span class="eyebrow">Pimpinan Rayon</span>
           <h2>Badan Pengurus Harian</h2>
-          @foreach ($bph->groupBy('jabatan') as $jabatan => $kelompok)
-          <h3 class="structure-role">{{ $jabatan }}</h3>
           <div class="bph-grid">
-            @foreach ($kelompok as $p)
+            @foreach ($bph as $p)
             <div class="bph-card">
               <div class="ph">
                 @if ($p->anggota->foto_url)
@@ -96,7 +94,6 @@
             </div>
             @endforeach
           </div>
-          @endforeach
         </div>
         @endif
 

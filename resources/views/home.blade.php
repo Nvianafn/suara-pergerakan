@@ -23,8 +23,7 @@
         </div>
       </div>
       <div class="movement-visual">
-        <div class="identity-orbit"><span class="orbit-ring orbit-ring-outer"></span><span class="orbit-ring orbit-ring-inner"></span><x-icon name="spark" :size="36"/><img src="{{ \App\Models\Setting::imageUrl('logo', 'images/logo.png') }}" alt="Lambang PMII Rayon Saintek" fetchpriority="high" width="280" height="280"><span class="identity-word">SAINTEK<br>BERGERAK.</span></div>
-        <span class="visual-label">BERAKAR DALAM NILAI · BERGERAK UNTUK PERUBAHAN</span>
+        <div class="identity-orbit"><span class="orbit-ring orbit-ring-outer"></span><img src="{{ \App\Models\Setting::imageUrl('logo', 'images/logo.png') }}" alt="Lambang PMII Rayon Saintek" fetchpriority="high" width="280" height="280"></div>
       </div>
     </div>
   </section>
