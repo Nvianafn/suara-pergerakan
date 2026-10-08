@@ -28,6 +28,15 @@ runtime terpisah, bootstrap admin dan pemeriksaan aplikasi berhasil.
 
 ## Deployment pertama — 8 Oktober 2026
 
+- Cleanup resource percobaan selesai setelah memeriksa dependensi: app
+  `suara-pergerakan`, environment `env-suara-pergerakan`/`env-suara-eastasia`,
+  serta server `sql-suara-21f28aeb` (hanya master, tanpa database organisasi)
+  telah dihapus. Resource production tersisa web, migration Job, server SQL
+  East Asia beserta database; environment bersama tetap dipakai.
+- Sesudah cleanup, `rayonsaintek.com` homepage/login dan `ashofah.me` HTTP 200.
+  Scale web tetap min 0/max 1. Firewall SQL tersisa `shared-environment-egress`;
+  tidak ada rule runner/bootstrap sementara. Default branch `develop` memuat
+  cron backup, tetapi run schedule pertama belum terjadi saat pemeriksaan.
 - Custom domain `https://rayonsaintek.com` aktif dengan Azure managed certificate
   `mc-env-ashofah-wo-rayonsaintek-com-5288`, binding SNI. DNS apex A menuju
   `70.153.96.216`, DNS-only, TXT `asuid` dipertahankan untuk verifikasi.
