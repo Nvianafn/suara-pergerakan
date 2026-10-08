@@ -74,3 +74,6 @@ finally:
     print("Maintenance duration seconds:", round(time.monotonic() - started), flush=True)
     if errors:
         raise RuntimeError("; ".join(errors))
+    recovery_path = os.environ["RUNNER_TEMP"] + "/backup-recovery.json"
+    if os.path.exists(recovery_path):
+        os.unlink(recovery_path)

@@ -65,9 +65,15 @@ jobs:
               raise SystemExit(0)
           state = json.load(open(path))
           subprocess.run(['docker', 'stop', '-t', '60', 'suara-backup'], capture_output=True)
+          revisions = json.loads(subprocess.check_output(['az', 'containerapp', 'revision', 'list', '-g', 'rg-suara-pergerakan', '-n', 'suara-web', '-o', 'json']))
+          active = {revision['name'] for revision in revisions if revision['properties']['active']}
           for revision in state['revisions']:
-              subprocess.run(['az', 'containerapp', 'revision', 'activate', '-g', 'rg-suara-pergerakan', '-n', 'suara-web', '--revision', revision, '-o', 'none'], check=True)
-          subprocess.run(['az', 'sql', 'server', 'firewall-rule', 'delete', '-g', 'rg-suara-pergerakan', '-s', state['server'], '-n', state['rule'], '-o', 'none'], check=True)
+              if revision not in active:
+                  subprocess.run(['az', 'containerapp', 'revision', 'activate', '-g', 'rg-suara-pergerakan', '-n', 'suara-web', '--revision', revision, '-o', 'none'], check=True)
+          rules = json.loads(subprocess.check_output(['az', 'sql', 'server', 'firewall-rule', 'list', '-g', 'rg-suara-pergerakan', '-s', state['server'], '-o', 'json']))
+          if any(rule['name'] == state['rule'] for rule in rules):
+              subprocess.run(['az', 'sql', 'server', 'firewall-rule', 'delete', '-g', 'rg-suara-pergerakan', '-s', state['server'], '-n', state['rule'], '-o', 'none'], check=True)
+          os.unlink(path)
           PY
       - name: Check recovered HTTP endpoint
         if: always()
