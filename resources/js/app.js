@@ -124,7 +124,9 @@ if (hdr) {
 }
 
 // Reveal-on-scroll animation
-const io = new IntersectionObserver(
+const revealSelectors = '.movement-copy, .movement-visual, .intro-grid > div, .rayon-documentation, .movement-section-head, .editorial-card, .movement-event-card, .movement-bureau, .community-panel, .movement-contact .wrap, .bph-card, .structure-role, .structure-bureau, .structure-page .person, .karya-card, .keg-card';
+const revealMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const io = 'IntersectionObserver' in window ? new IntersectionObserver(
     (entries) => {
         entries.forEach((e) => {
             if (e.isIntersecting) {
@@ -133,9 +135,35 @@ const io = new IntersectionObserver(
             }
         });
     },
-    { threshold: 0.1 }
-);
-document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    { threshold: 0.08 }
+) : null;
+const initializeReveals = () => {
+    if (!document.body.classList.contains('public-body')) return;
+    document.querySelectorAll(revealSelectors).forEach((el) => el.classList.add('reveal'));
+    document.querySelectorAll('.reveal').forEach((el) => {
+        if (el.dataset.revealReady) return;
+        el.dataset.revealReady = 'true';
+        if (!io || revealMotion.matches) {
+            el.classList.add('in');
+            return;
+        }
+        const siblings = Array.from(el.parentElement.children).filter((child) => child.classList.contains('reveal'));
+        el.style.setProperty('--reveal-delay', `${Math.min(siblings.indexOf(el) % 4, 3) * 70}ms`);
+        el.classList.add('reveal-ready');
+        io.observe(el);
+    });
+};
+initializeReveals();
+document.addEventListener('livewire:navigated', initializeReveals);
+document.addEventListener('livewire:init', () => {
+    window.Livewire.hook('morphed', initializeReveals);
+});
+revealMotion.addEventListener('change', (event) => {
+    if (event.matches) document.querySelectorAll('.reveal').forEach((el) => {
+        el.classList.add('in');
+        io?.unobserve(el);
+    });
+});
 
 // Mobile menu toggle
 const menuBtn = document.querySelector('.menu-btn');

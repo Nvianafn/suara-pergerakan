@@ -81,3 +81,10 @@
 @media(max-width:800px){.home-page .movement-grid{grid-template-columns:1fr;gap:32px;min-height:0}.home-page .movement-visual{height:auto;width:100%;max-width:360px;margin:auto;padding-bottom:28px}.identity-orbit{max-width:320px}.public-body .page-hero{padding-top:130px;padding-bottom:48px}.structure-page .bph-panel{padding:28px 20px}.structure-page .bph-card{flex-basis:190px}.structure-page .b-body{padding:24px 16px;gap:20px}.structure-page .person{flex-basis:180px}}
 @media(max-width:480px){.home-page .movement-copy h1{font-size:2.8rem}.structure-page .bph-card{flex-basis:220px}.structure-page .b-head{flex-wrap:wrap;padding:20px}.structure-page .b-head h3{font-size:17px}.structure-page .b-head .count{font-size:11px}.structure-page .person{flex-basis:220px}.public-body .search-box{min-width:0;flex:1 1 100%}}
 @media(prefers-reduced-motion:reduce){.public-body *{scroll-behavior:auto;transition:none!important}}
+
+/* Content is visible until JavaScript explicitly registers it. */
+.public-body .reveal{opacity:1;transform:none}
+.public-body .reveal.reveal-ready{opacity:0;transform:translateY(20px);transition:opacity .55s ease var(--reveal-delay,0ms),transform .55s cubic-bezier(.2,.65,.3,1) var(--reveal-delay,0ms)}
+.public-body .reveal.reveal-ready.in{opacity:1;transform:none}
+@media(max-width:800px){.public-body .reveal.reveal-ready{transform:translateY(12px);transition-duration:.4s}}
+@media(prefers-reduced-motion:reduce){.public-body .reveal.reveal-ready{opacity:1;transform:none;transition:none}}
