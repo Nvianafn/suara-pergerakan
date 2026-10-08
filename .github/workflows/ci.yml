@@ -1,0 +1,68 @@
+name: Application checks
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DB_CONNECTION: sqlsrv
+      DB_HOST: 127.0.0.1
+      DB_PORT: 1433
+      DB_DATABASE: suara_pergerakan_test
+      DB_USERNAME: sa
+      DB_PASSWORD: 'CI-only_SQL_Password_2026!'
+      DB_ENCRYPT: 'yes'
+      DB_TRUST_SERVER_CERTIFICATE: 'true'
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_PID: Developer
+          MSSQL_SA_PASSWORD: 'CI-only_SQL_Password_2026!'
+        ports:
+          - 1433:1433
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: gd, intl, zip, bcmath, sqlsrv, pdo_sqlsrv
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: composer install --prefer-dist --no-interaction
+      - run: npm ci
+      - run: npm run build
+      - run: vendor/bin/pint --test
+      - name: Wait for SQL Server and create test database
+        run: |
+          php <<'PHP'
+          <?php
+          for ($attempt = 0; $attempt < 60; $attempt++) {
+              try {
+                  $pdo = new PDO('sqlsrv:Server=127.0.0.1,1433;Database=master;Encrypt=yes;TrustServerCertificate=yes', getenv('DB_USERNAME'), getenv('DB_PASSWORD'));
+                  $pdo->exec('CREATE DATABASE suara_pergerakan_test');
+                  exit(0);
+              } catch (PDOException $exception) {
+                  if ($attempt === 59) {
+                      fwrite(STDERR, "SQL Server initialization failed.\n");
+                      exit(1);
+                  }
+                  sleep(2);
+              }
+          }
+          PHP
+      - run: vendor/bin/phpunit -c phpunit.sqlserver.xml
