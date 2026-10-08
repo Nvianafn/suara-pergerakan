@@ -141,7 +141,24 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 const menuBtn = document.querySelector('.menu-btn');
 const mobileNav = document.getElementById('mobile-nav');
 if (menuBtn && mobileNav) {
-    menuBtn.addEventListener('click', () => mobileNav.classList.toggle('open'));
+    const setMenuOpen = (open) => {
+        mobileNav.classList.toggle('open', open);
+        menuBtn.setAttribute('aria-expanded', String(open));
+        menuBtn.setAttribute('aria-label', open ? 'Tutup menu navigasi' : 'Buka menu navigasi');
+    };
+    menuBtn.addEventListener('click', () => setMenuOpen(!mobileNav.classList.contains('open')));
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && mobileNav.classList.contains('open')) {
+            setMenuOpen(false);
+            menuBtn.focus();
+        }
+    });
+    document.addEventListener('click', (event) => {
+        if (!mobileNav.contains(event.target) && !menuBtn.contains(event.target)) setMenuOpen(false);
+    });
+    window.matchMedia('(min-width: 961px)').addEventListener('change', (event) => {
+        if (event.matches) setMenuOpen(false);
+    });
 }
 
 // Simple accordion (kepengurusan per-biro)

@@ -7,16 +7,18 @@
         <span class="brand-txt"><b>{{ Setting::get('nama_rayon', 'PMII Rayon Saintek') }}</b><span>{{ Setting::get('tagline') ?: 'Bergerak · Berpikir · Berkarya' }}</span></span>
       </a>
       <div class="nav-links">
+        <a href="{{ route('home') }}" @class(['active' => request()->routeIs('home')])>Beranda</a>
         <a href="{{ route('tentang') }}" @class(['active' => request()->routeIs('tentang')])>Tentang</a>
         <a href="{{ route('biro.index') }}" @class(['active' => request()->routeIs('biro.*')])>Biro</a>
         <a href="{{ route('kegiatan.index') }}" @class(['active' => request()->routeIs('kegiatan.*')])>Kegiatan</a>
         <a href="{{ route('karya.index') }}" @class(['active' => request()->routeIs('karya.*')])>Karya</a>
         <a href="{{ route('kepengurusan') }}" @class(['active' => request()->routeIs('kepengurusan')])>Kepengurusan</a>
       </div>
-      <a href="{{ route('kontak') }}" class="btn btn-primary">Gabung Kami</a>
-      <button class="btn btn-ghost menu-btn" aria-label="Menu">&#9776;</button>
+      <a href="{{ route('kontak') }}" class="btn btn-primary">Mari terhubung <x-icon :size="18"/></a>
+      <button type="button" class="btn btn-ghost menu-btn" aria-label="Buka menu navigasi" aria-controls="mobile-nav" aria-expanded="false"><x-icon name="menu"/></button>
     </nav>
     <div id="mobile-nav" class="glass">
+      <a href="{{ route('home') }}">Beranda</a>
       <a href="{{ route('tentang') }}">Tentang</a>
       <a href="{{ route('biro.index') }}">Biro</a>
       <a href="{{ route('kegiatan.index') }}">Kegiatan</a>

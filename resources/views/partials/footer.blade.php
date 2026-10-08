@@ -4,7 +4,7 @@
     <div class="foot-grid">
       <div>
         <a class="brand" href="{{ route('home') }}">
-          <img class="mark" src="{{ asset('images/logo.png') }}" alt="Logo PMII Rayon Saintek" style="background:none;padding:0;border-radius:50%;object-fit:cover">
+           <img class="mark" src="{{ Setting::imageUrl('logo', 'images/logo.png') }}" alt="Logo PMII Rayon Saintek" style="background:none;padding:0;border-radius:50%;object-fit:cover">
           <span class="brand-txt"><b>{{ Setting::get('nama_rayon', 'PMII Rayon Saintek') }}</b><span>{{ Setting::get('tagline') ?: 'Bergerak · Berpikir · Berkarya' }}</span></span>
         </a>
         <p>{{ Setting::get('deskripsi_singkat') }}</p>
@@ -15,7 +15,7 @@
           <a href="{{ $socialUrl }}" aria-label="{{ $label }}" target="_blank" rel="noopener noreferrer nofollow">{{ $label }}</a>
           @endif
           @endforeach
-          <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', Setting::get('no_wa', '')) }}" aria-label="WhatsApp" target="_blank" rel="noopener">&#128172;</a>
+          @if(Setting::get('no_wa'))<a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', Setting::get('no_wa', '')) }}" aria-label="WhatsApp" target="_blank" rel="noopener"><x-icon name="chat"/></a>@endif
         </div>
       </div>
       <div class="foot-col">
@@ -41,7 +41,7 @@
     </div>
     <div class="copy">
       <span>&copy; {{ date('Y') }} {{ Setting::get('nama_rayon', 'PMII Rayon Saintek') }}. Seluruh hak cipta dilindungi.</span>
-      <span>Dibuat dengan &#10084; untuk pergerakan.</span>
+       <span>Merawat gagasan. Mengabadikan pergerakan.</span>
     </div>
   </div>
 </footer>
