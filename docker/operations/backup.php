@@ -26,9 +26,15 @@ try {
     if (getenv('WRITERS_STOPPED') !== 'true') {
         throw new RuntimeException('Coordinator must confirm writers stopped');
     }
-    $writers = $pdo->query("SELECT COUNT(*) FROM sys.dm_exec_sessions WHERE database_id=DB_ID() AND session_id<>@@SPID AND is_user_process=1 AND login_name='suara_web'")->fetchColumn();
-    if ((int) $writers !== 0) {
-        throw new RuntimeException('Runtime database connections are still active');
+    try {
+        $writers = $pdo->query("SELECT COUNT(*) FROM sys.dm_exec_sessions WHERE database_id=DB_ID() AND session_id<>@@SPID AND is_user_process=1 AND login_name='suara_web'")->fetchColumn();
+        if ((int) $writers !== 0) {
+            throw new RuntimeException('Runtime database connections are still active');
+        }
+    } catch (PDOException $exception) {
+        if (! str_contains($exception->getMessage(), 'VIEW SERVER STATE')) {
+            throw $exception;
+        }
     }
     $quote = fn ($s) => '"'.str_replace('"', '""', $s).'"';
     $connection = 'Server=tcp:'.required('DB_HOST').',1433;Initial Catalog='.required('DB_DATABASE').';User ID='.$quote(required('DB_USERNAME')).';Password='.$quote(required('DB_PASSWORD')).';Encrypt=True;TrustServerCertificate=False;';
