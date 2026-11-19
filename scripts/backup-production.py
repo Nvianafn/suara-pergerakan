@@ -1,6 +1,7 @@
 """Coordinate exclusive maintenance around the backup container in GitHub Actions."""
 import json
 import os
+import socket
 import subprocess
 import time
 import urllib.request
@@ -11,6 +12,17 @@ def az(*args):
     if result.returncode:
         raise RuntimeError("Azure operation failed; credential-bearing diagnostics suppressed")
     return json.loads(result.stdout) if result.stdout.strip() else None
+
+
+def wait_for_sql(host, timeout_seconds=180):
+    deadline = time.monotonic() + timeout_seconds
+    while time.monotonic() < deadline:
+        try:
+            with socket.create_connection((host, 1433), timeout=10):
+                return
+        except OSError:
+            time.sleep(5)
+    raise RuntimeError("SQL server remained unreachable after firewall rule creation")
 
 
 group = "rg-suara-pergerakan"
@@ -37,6 +49,7 @@ try:
     az("sql", "server", "firewall-rule", "create", "-g", group, "-s", server, "-n", rule,
        "--start-ip-address", ip, "--end-ip-address", ip)
     firewall_created = True
+    wait_for_sql(os.environ["DB_HOST"])
     # Persist recovery state before any revision is changed, including ambiguous API failures.
     with open(os.environ["RUNNER_TEMP"] + "/backup-recovery.json", "w") as recovery:
         json.dump({"revisions": active, "server": server, "rule": rule}, recovery)
