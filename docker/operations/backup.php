@@ -19,8 +19,23 @@ try {
     $bucket = required('BACKUP_R2_BUCKET');
     $prefix = 'snapshots/'.gmdate('Y/m/d/His').'-'.bin2hex(random_bytes(6));
     $file = '/tmp/database.bacpac';
-    $pdo = new PDO('sqlsrv:Server='.required('DB_HOST').',1433;Database='.required('DB_DATABASE').';Encrypt=yes;TrustServerCertificate=no', required('DB_USERNAME'), required('DB_PASSWORD'));
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = null;
+    for ($attempt = 1; $attempt <= 6; $attempt++) {
+        try {
+            $pdo = new PDO(
+                'sqlsrv:Server='.required('DB_HOST').',1433;Database='.required('DB_DATABASE').';Encrypt=yes;TrustServerCertificate=no',
+                required('DB_USERNAME'),
+                required('DB_PASSWORD'),
+                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 15]
+            );
+            break;
+        } catch (PDOException $exception) {
+            if ($attempt === 6) {
+                throw $exception;
+            }
+            sleep(5);
+        }
+    }
     $pdo->exec("DECLARE @r int; EXEC @r=sp_getapplock @Resource='suara-operations', @LockMode='Exclusive', @LockOwner='Session', @LockTimeout=0; IF @r<0 THROW 50001, 'Operation already running', 1;");
 
     if (getenv('WRITERS_STOPPED') !== 'true') {
